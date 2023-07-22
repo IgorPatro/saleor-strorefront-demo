@@ -1,7 +1,8 @@
 import { useQuery } from "@apollo/client";
+import { useSession } from "next-auth/react";
 
-import { serverClient } from "../utils/apolloClient";
-import { PRODUCTS_QUERY } from "../graphql/products";
+import { serverClient } from "@/utils/apolloClient";
+import { PRODUCTS_QUERY } from "@/graphql/queries/products";
 
 export const getServerSideProps = async () => {
   const { data } = await serverClient.query({
@@ -15,11 +16,11 @@ export const getServerSideProps = async () => {
   };
 };
 
-export default function Home({ products }) {
+export default function Home({ products }: any) {
   const { data } = useQuery(PRODUCTS_QUERY);
+  const session = useSession();
 
-  console.log("PRODUCTS Server", products);
-  console.log("PRODUCTS", data?.products.edges);
+  console.log(session);
 
   return (
     <div>
