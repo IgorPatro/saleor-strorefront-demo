@@ -1,56 +1,61 @@
-import { useSaleorAuthContext } from "@saleor/auth-sdk/react";
-import ReactMarkdown from "react-markdown";
+import { useQuery } from "@apollo/client";
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
+import Link from "next/link";
+import Image from "next/image";
 
-function renderBlock(block: any) {
-  switch (block.type) {
-    case "paragraph":
-      return <ReactMarkdown>{block.data.text}</ReactMarkdown>;
-    case "header":
-      // react-markdown allows you to map markdown types to custom react components.
-      // Here we map headers of level 1 to h1 elements, level 2 to h2, and so on.
-      // We pass the markdown content as children to the ReactMarkdown component.
-      return (
-        <ReactMarkdown
-          components={{ h1: ({ node, ...props }) => <h1 {...props} /> }}
-        >
-          {block.data.text}
-        </ReactMarkdown>
-      );
-    default:
-      return null;
-  }
-}
+import { serverClient } from "@/utils/apolloClient";
+import { PRODUCTS_QUERY } from "@/graphql/queries/products";
+import { ME_QUERY } from "@/graphql/queries/me";
 
-const JsonContent =
-  '{"time": 1689878231963, "blocks": [{"id": "M-pekNZPDG", "data": {"text": "Test"}, "type": "paragraph"}, {"id": "-XBulvFQax", "data": {"text": "This is heading", "level": 1}, "type": "header"}, {"id": "GVWWp8_WUh", "data": {"text": "![cat](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkIQgckWx3NgeysRYvIodWkUbEKG0bGESMkXzN6tfc&amp;s)"}, "type": "paragraph"}], "version": "2.24.3"}';
+export const getServerSideProps = async () => {
+  const { data } = await serverClient.query({
+    query: PRODUCTS_QUERY,
+  });
 
-export const getServerSideProps = async (ctx: any) => {
   return {
-    props: {},
+    props: {
+      products: data?.products.edges,
+    },
   };
 };
 
-export default function Home() {
-  const { signIn } = useSaleorAuthContext();
+export default function Home({ products }: any) {
+  // const { data } = useQuery(PRODUCTS_QUERY);
+  const { data: me } = useQuery(ME_QUERY);
+  const session = useSession();
 
-  const blocks = JSON.parse(JsonContent).blocks.map((block: any) => block);
-  console.log(blocks);
-
-  const login = async () => {
-    const data = await signIn({
-      email: "i.patro@wp.pl",
-      password: "pass12345678",
-    });
-
-    console.log(data);
-  };
+  console.log(session);
+  console.log(me);
 
   return (
-    <div>
-      <h1>Hello world!</h1>
-      <button onClick={login}>Login</button>
-      {blocks.map((block: any) => renderBlock(block))}
-      <ReactMarkdown>### Siusiak</ReactMarkdown>
+    <div className="p-8">
+      <h1 className="underline text-red-500">Hello world!</h1>
+      <button
+        className="bg-blue-400 px-6 py-2 rounded-lg"
+        onClick={() => signOut()}
+      >
+        Sign out
+      </button>
+      <br />
+      <br />
+      <div className="flex gap-4">
+        {products.map((product) => (
+          <Link
+            href={`/product/${product.node.slug}`}
+            key={product.node.id}
+            className="w-64 bg-slate-100 p-4"
+          >
+            <h2>{product.node.name}</h2>
+            <Image
+              src={product.node.media[0].url}
+              alt="not yet"
+              width={300}
+              height={500}
+            />
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
