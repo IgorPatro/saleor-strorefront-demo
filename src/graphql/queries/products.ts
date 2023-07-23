@@ -6,6 +6,11 @@ export const PRODUCTS_QUERY = gql`
       edges {
         node {
           id
+          slug
+          name
+          media {
+            url(format: ORIGINAL)
+          }
         }
       }
     }

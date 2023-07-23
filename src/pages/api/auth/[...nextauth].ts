@@ -49,8 +49,6 @@ export const authOptions = {
           throw new Error("Invalid credentials custom error");
         }
 
-        console.log("TOKEN", token);
-
         if (token)
           return {
             token: token as string,
