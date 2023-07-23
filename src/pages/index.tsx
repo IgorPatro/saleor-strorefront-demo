@@ -1,7 +1,7 @@
 import { useSaleorAuthContext } from "@saleor/auth-sdk/react";
 import ReactMarkdown from "react-markdown";
 
-function renderBlock(block) {
+function renderBlock(block: any) {
   switch (block.type) {
     case "paragraph":
       return <ReactMarkdown>{block.data.text}</ReactMarkdown>;
@@ -24,7 +24,7 @@ function renderBlock(block) {
 const JsonContent =
   '{"time": 1689878231963, "blocks": [{"id": "M-pekNZPDG", "data": {"text": "Test"}, "type": "paragraph"}, {"id": "-XBulvFQax", "data": {"text": "This is heading", "level": 1}, "type": "header"}, {"id": "GVWWp8_WUh", "data": {"text": "![cat](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkIQgckWx3NgeysRYvIodWkUbEKG0bGESMkXzN6tfc&amp;s)"}, "type": "paragraph"}], "version": "2.24.3"}';
 
-export const getServerSideProps = async (ctx) => {
+export const getServerSideProps = async (ctx: any) => {
   return {
     props: {},
   };
@@ -33,7 +33,7 @@ export const getServerSideProps = async (ctx) => {
 export default function Home() {
   const { signIn } = useSaleorAuthContext();
 
-  const blocks = JSON.parse(JsonContent).blocks.map((block) => block);
+  const blocks = JSON.parse(JsonContent).blocks.map((block: any) => block);
   console.log(blocks);
 
   const login = async () => {
@@ -49,7 +49,7 @@ export default function Home() {
     <div>
       <h1>Hello world!</h1>
       <button onClick={login}>Login</button>
-      {blocks.map((block) => renderBlock(block))}
+      {blocks.map((block: any) => renderBlock(block))}
       <ReactMarkdown>### Siusiak</ReactMarkdown>
     </div>
   );

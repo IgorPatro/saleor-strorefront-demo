@@ -37,6 +37,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   });
 
   useAuthChange({
+    saleorApiUrl: "http://localhost:8000/graphql/",
     onSignedOut: () => reset(),
     onSignedIn: () => refetch(),
   });
