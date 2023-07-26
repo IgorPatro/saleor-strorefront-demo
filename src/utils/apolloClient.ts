@@ -33,7 +33,7 @@ export const serverClient = new ApolloClient({
   link: createHttpLink({
     uri: "http://localhost:8000/graphql/",
     credentials: "same-origin",
-    headers: { Authorization: "Bearer t8jEmbLXJEL4BfU3p6Rvr7tMOAV2cN" },
+    headers: { Authorization: "Bearer rq0R1LtARx3d4spRB2J88McQO2A2sY" },
   }),
   cache: new InMemoryCache(),
   ssrMode: true,
