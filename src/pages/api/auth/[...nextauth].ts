@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { serverClient } from "@/utils/apolloClient";
 import { SIGNIN_MUTATION } from "@/graphql/mutations/signin";
+import { type DefaultSession } from "next-auth";
 
 export const authOptions = {
   callbacks: {
@@ -41,17 +42,15 @@ export const authOptions = {
           variables: credentials,
         });
 
-        const {
-          tokenCreate: { errors = [], token, user },
-        } = data;
-
-        if (errors.length > 0) {
+        if (data?.tokenCreate && data.tokenCreate.errors.length > 0) {
           throw new Error("Invalid credentials custom error");
         }
 
-        if (token)
+        if (data?.tokenCreate?.token && data?.tokenCreate?.user) {
+          const { token, user } = data.tokenCreate;
+
           return {
-            token: token as string,
+            token: token,
             id: "uuid",
             name: `${user.firstName} ${user.lastName}`,
             email: user.email,
@@ -61,6 +60,9 @@ export const authOptions = {
               email: user.email,
             },
           };
+        }
+
+        return null;
       },
     }),
   ],
@@ -71,22 +73,22 @@ export const authOptions = {
 
 export default NextAuth(authOptions);
 
-// declare module "next-auth" {
-//   interface Session {
-//     token: string;
-//     // user: {
-//     //   uuid: string;
-//     //   fullName: string;
-//     //   email: string;
-//     // } & DefaultSession["user"];
-//   }
+declare module "next-auth" {
+  interface Session {
+    token: string;
+    user: {
+      uuid: string;
+      fullName: string;
+      email: string;
+    } & DefaultSession["user"];
+  }
 
-//   interface JWT {
-//     token: string;
-//     // user: {
-//     //   uuid: string;
-//     //   fullName: string;
-//     //   email: string;
-//     // };
-//   }
-// }
+  interface JWT {
+    token: string;
+    user: {
+      uuid: string;
+      fullName: string;
+      email: string;
+    };
+  }
+}
