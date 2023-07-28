@@ -1,9 +1,7 @@
-import { gql } from "@apollo/client";
-import { type Checkout } from "@/graphql/types/checkout";
-import { type Error } from "@/graphql/types/error";
+import { gql } from "@/saleor/gql";
 
-export const CHECKOUT_QUERY = gql`
-  query CheckoutQuery($checkoutId: ID!) {
+export const CHECKOUT_QUERY = gql(`
+  query Checkout($checkoutId: ID!) {
     checkout(id: $checkoutId) {
       created
       email
@@ -35,8 +33,4 @@ export const CHECKOUT_QUERY = gql`
       }
     }
   }
-`;
-
-export type CheckoutQuery = {
-  checkout: Checkout;
-};
+`);

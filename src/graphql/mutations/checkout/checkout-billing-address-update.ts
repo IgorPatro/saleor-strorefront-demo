@@ -1,7 +1,6 @@
-import { gql } from "@apollo/client";
-import { type Error } from "../types/error";
+import { gql } from "@/saleor/gql";
 
-export const CHECKOUT_BILLING_ADDRESS_UPDATE = gql`
+export const CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION = gql(`
   mutation CheckoutBillingAddressUpdate(
     $city: String!
     $streetAddress1: String!
@@ -26,13 +25,4 @@ export const CHECKOUT_BILLING_ADDRESS_UPDATE = gql`
       }
     }
   }
-`;
-
-export type CheckoutBillingAddressUpdate = {
-  checkoutCreate: {
-    checkout: {
-      id: string;
-    };
-    errors: Error[];
-  };
-};
+`);

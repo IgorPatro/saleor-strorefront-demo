@@ -1,10 +1,12 @@
-import { gql } from "@apollo/client";
+import { gql } from "@/saleor/gql";
 
-export const ME_QUERY = gql`
-  query MeQuery {
+export const ME_QUERY = gql(`
+  query Me {
     me {
       id
       email
+      firstName
+      lastName
     }
   }
-`;
+`);

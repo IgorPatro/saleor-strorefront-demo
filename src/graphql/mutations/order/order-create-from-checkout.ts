@@ -1,9 +1,7 @@
-import { gql } from "@apollo/client";
-import { type Order } from "@/graphql/types/order";
-import { type Error } from "@/graphql/types/error";
+import { gql } from "@/saleor/gql";
 
-export const CREATE_ORDER_FROM_CHECKOUT = gql`
-  mutation CreateOrderFromCheckout($checkoutId: ID!) {
+export const ORDER_CREATE_FROM_CHECKOUT_MUTATION = gql(`
+  mutation OrderCreateFromCheckout($checkoutId: ID!) {
     orderCreateFromCheckout(id: $checkoutId, removeCheckout: false) {
       order {
         status
@@ -28,11 +26,4 @@ export const CREATE_ORDER_FROM_CHECKOUT = gql`
       }
     }
   }
-`;
-
-export type CreateCheckoutFromQuery = {
-  orderCreateFromCheckout: {
-    order: Order;
-    errors: Error[];
-  };
-};
+`);

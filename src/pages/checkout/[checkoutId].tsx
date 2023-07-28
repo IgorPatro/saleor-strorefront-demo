@@ -1,14 +1,15 @@
 import React from "react";
 import { serverClient } from "@/utils/apolloClient";
-import { CHECKOUT_QUERY, type CheckoutQuery } from "@/graphql/queries/checkout";
+import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 import Image from "next/image";
 import axios from "axios";
 import { GetServerSideProps } from "next";
+import { type CheckoutQuery } from "@/saleor/graphql";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const checkoutId = ctx.query["checkoutId"] as string;
 
-  const { data: checkoutData } = await serverClient.query<CheckoutQuery>({
+  const { data: checkoutData } = await serverClient.query({
     query: CHECKOUT_QUERY,
     variables: {
       checkoutId: checkoutId,
@@ -27,7 +28,7 @@ interface CheckoutPageProps {
 
 const CheckoutPage = ({ checkoutId, checkoutData }: CheckoutPageProps) => {
   const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState(checkoutData?.checkout.email);
+  const [email, setEmail] = React.useState(checkoutData?.checkout?.email ?? "");
 
   const onCompleteCheckout = async () => {
     try {
@@ -45,22 +46,26 @@ const CheckoutPage = ({ checkoutId, checkoutData }: CheckoutPageProps) => {
 
   if (!checkoutData) return null;
 
+  const getFirstImage = (arrayOfInages: any[]) => {
+    return arrayOfInages[0];
+  };
+
   return (
     <div className="p-4">
-      {checkoutData.checkout.lines.map((line) => (
+      {checkoutData.checkout?.lines.map((line) => (
         <div key={line.id} className="p-2 flex items-center gap-8">
           <div>
             {line.variant.name}
             <br />
             <Image
-              src={line.variant.product.media[0].url}
+              src={getFirstImage(line.variant.product.media ?? []).url}
               alt="not yet"
               width={300}
               height={500}
             />
           </div>
           <div>
-            {line.quantity} x {line.variant.pricing.price.gross.amount}PLN
+            {line.quantity} x {line.variant?.pricing?.price?.gross.amount}PLN
           </div>
         </div>
       ))}
