@@ -1,31 +1,27 @@
-import { useQuery, useMutation } from "@apollo/client";
-import { useSession } from "next-auth/react";
+import { useMutation } from "@apollo/client";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
 import { serverClient } from "@/utils/apolloClient";
-import { PRODUCTS_QUERY, type ProductsQuery } from "@/graphql/queries/products";
-import {
-  CREATE_CHECKOUT,
-  type CreateCheckout,
-} from "@/graphql/mutations/checkout-create";
-import {
-  CHECKOUT_LINES_ADD,
-  type CheckoutLinesAdd,
-} from "@/graphql/mutations/checkout-lines-add";
+import { PRODUCTS_QUERY } from "@/graphql/queries/products";
+import { CHECKOUT_CREATE_MUTATION } from "@/graphql/mutations/checkout/checkout-create";
+import { CHECKOUT_LINES_ADD_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-add";
 import { useLocalStorage } from "@/utils/useLocalStorage";
-import { type Product } from "@/graphql/types/product";
+
+import { type Product } from "@/saleor/graphql";
 
 export const getServerSideProps = async () => {
-  const { data } = await serverClient.query<ProductsQuery>({
+  const { data } = await serverClient.query({
     query: PRODUCTS_QUERY,
   });
 
+  const products = data ? data.products?.edges : [];
+
   return {
     props: {
-      products: data.products.edges,
+      products,
     },
   };
 };
@@ -36,9 +32,8 @@ interface HomeProps {
 
 export default function Home({ products }: HomeProps) {
   const [cartId, setCartId] = useLocalStorage("cartId");
-  const [createCheckout] = useMutation<CreateCheckout>(CREATE_CHECKOUT);
-  const [addLinesToCheckout] =
-    useMutation<CheckoutLinesAdd>(CHECKOUT_LINES_ADD);
+  const [createCheckout] = useMutation(CHECKOUT_CREATE_MUTATION);
+  const [addLinesToCheckout] = useMutation(CHECKOUT_LINES_ADD_MUTATION);
   const { push } = useRouter();
 
   const onCheckoutCreate = async (variantId: string) => {
@@ -48,13 +43,13 @@ export default function Home({ products }: HomeProps) {
       },
     });
 
-    if (data && data.checkoutCreate.errors.length > 0) {
+    if (data && data.checkoutCreate && data.checkoutCreate.errors.length > 0) {
       // TODO: Handle error message
       return;
     }
 
-    setCartId(data?.checkoutCreate.checkout.id);
-    return push(`/checkout/${data?.checkoutCreate.checkout.id}`);
+    setCartId(data?.checkoutCreate?.checkout?.id);
+    return push(`/checkout/${data?.checkoutCreate?.checkout?.id}`);
   };
 
   const onAddToCart = async (variantId: string) => {
@@ -66,12 +61,16 @@ export default function Home({ products }: HomeProps) {
         },
       });
 
-      if (data && data.checkoutLinesAdd.errors.length > 0) {
+      if (
+        data &&
+        data.checkoutLinesAdd &&
+        data.checkoutLinesAdd.errors?.length > 0
+      ) {
         // TODO: Handle error message
         return;
       }
 
-      return push(`/cart/${data?.checkoutLinesAdd.checkout.id}`);
+      return push(`/cart/${data?.checkoutLinesAdd?.checkout?.id}`);
     }
 
     const { data } = await createCheckout({
@@ -80,13 +79,13 @@ export default function Home({ products }: HomeProps) {
       },
     });
 
-    if (data && data.checkoutCreate.errors.length > 0) {
+    if (data && data.checkoutCreate && data.checkoutCreate.errors.length > 0) {
       // TODO: Handle error message
       return;
     }
 
-    setCartId(data?.checkoutCreate.checkout.id);
-    return push(`/checkout/${data?.checkoutCreate.checkout.id}`);
+    setCartId(data?.checkoutCreate?.checkout?.id);
+    return push(`/checkout/${data?.checkoutCreate?.checkout?.id}`);
   };
 
   return (

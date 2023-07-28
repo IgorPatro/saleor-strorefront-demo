@@ -1,7 +1,7 @@
-import { gql } from "@apollo/client";
+import { gql } from "@/saleor/gql";
 
-export const PRODUCT_QUERY = gql`
-  query ProdcutQuery($slug: String!) {
+export const PRODUCT_QUERY = gql(`
+  query Prodcut($slug: String!) {
     product(slug: $slug) {
       name
       slug
@@ -12,4 +12,4 @@ export const PRODUCT_QUERY = gql`
       }
     }
   }
-`;
+`);

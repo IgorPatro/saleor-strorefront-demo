@@ -1,7 +1,6 @@
-import { gql } from "@apollo/client";
-import { type Error } from "../types/error";
+import { gql } from "@/saleor/gql";
 
-export const CHECKOUT_LINES_ADD = gql`
+export const CHECKOUT_LINES_ADD_MUTATION = gql(`
   mutation CheckoutLinesAdd(
     $quantity: Int = 1
     $variantId: ID!
@@ -20,13 +19,4 @@ export const CHECKOUT_LINES_ADD = gql`
       }
     }
   }
-`;
-
-export type CheckoutLinesAdd = {
-  checkoutLinesAdd: {
-    checkout: {
-      id: string;
-    };
-    errors: Error[];
-  };
-};
+`);

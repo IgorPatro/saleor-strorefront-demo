@@ -1,9 +1,11 @@
 import React from "react";
 import { serverClient } from "@/utils/apolloClient";
 import { PRODUCT_QUERY } from "@/graphql/queries/product";
-import { renderBlock } from "@/utils/renderMarkdown";
+import { GetServerSideProps } from "next";
 
-export const getServerSideProps = async (ctx) => {
+import { type ProdcutQuery } from "@/saleor/graphql";
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const productSlug = ctx.query["productSlug"] as string;
 
   const { data } = await serverClient.query({
@@ -18,17 +20,22 @@ export const getServerSideProps = async (ctx) => {
   };
 };
 
-const ProductPage = ({ productSlug, data }) => {
-  console.log(data);
-  const blocks = JSON.parse(data.product.description).blocks.map(
-    (block) => block
+interface ProductPageProps {
+  productSlug: string;
+  productData: ProdcutQuery;
+}
+
+const ProductPage = ({ productSlug, productData }: ProductPageProps) => {
+  console.log(productData);
+  const blocks = JSON.parse(productData.product?.description).blocks.map(
+    (block: any) => block
   );
 
   console.log(blocks);
 
   return (
     <div>
-      <h1>{data.product.name}</h1>
+      <h1>{productData.product?.name}</h1>
       <br />
       {/* {blocks.map((block) => renderBlock(block))} */}
       {productSlug}

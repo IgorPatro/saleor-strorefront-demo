@@ -1,8 +1,7 @@
-import { gql } from "@apollo/client";
-import { type Product } from "@/graphql/types/product";
+import { gql } from "@/saleor/gql";
 
-export const PRODUCTS_QUERY = gql`
-  query ProductsQuery($first: Int = 10) {
+export const PRODUCTS_QUERY = gql(`
+  query Products($first: Int = 10) {
     products(first: $first, channel: "default") {
       edges {
         node {
@@ -27,12 +26,4 @@ export const PRODUCTS_QUERY = gql`
       }
     }
   }
-`;
-
-export type ProductsQuery = {
-  products: {
-    edges: {
-      node: Product;
-    };
-  };
-};
+`);

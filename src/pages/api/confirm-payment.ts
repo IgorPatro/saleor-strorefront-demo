@@ -1,12 +1,12 @@
 import { NextApiHandler } from "next";
 import { serverClient } from "@/utils/apolloClient";
-import { MARK_ORDER_PAID } from "@/graphql/mutations/mark-order-paid";
+import { ORDER_MARK_PAID_MUTATION } from "@/graphql/mutations/order/order-mark-paid";
 
 const confirmPayment: NextApiHandler = async (req, res) => {
-  const { orderId } = req.query;
+  const orderId = req.query["orderId"] as string;
 
   const { data } = await serverClient.mutate({
-    mutation: MARK_ORDER_PAID,
+    mutation: ORDER_MARK_PAID_MUTATION,
     variables: {
       orderId: orderId,
     },
