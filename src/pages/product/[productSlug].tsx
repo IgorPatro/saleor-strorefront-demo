@@ -46,11 +46,11 @@ function renderBlock(block: any) {
 
 const ProductPage = ({ productSlug, data }: any) => {
   console.log(data)
-  const blocks = JSON.parse(data.product.description).blocks.map(
-    (block: any) => block
-  )
+  // const blocks = JSON.parse(data.product.description).blocks.map(
+  //   (block: any) => block
+  // )
 
-  console.log(blocks)
+  // console.log(blocks)
 
   console.log(data)
   return (
@@ -79,11 +79,11 @@ const ProductPage = ({ productSlug, data }: any) => {
           </h2>
         </div>
 
-        {/* {productSlug} */}
-        {blocks.map((block: any) => renderBlock(block))}
-        <ReactMarkdown>### Siusiak</ReactMarkdown>
+        {/* {blocks.map((block: any) => renderBlock(block))}
+        <ReactMarkdown>### Siusiak</ReactMarkdown> */}
       </div>
     </div>
+    // <>{productSlug}</>
   )
 }
 
