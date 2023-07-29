@@ -12,7 +12,7 @@ const httpLink = createHttpLink({
   credentials: "include",
 });
 
-const authLink = setContext(async (_, { headers }: { headers: Headers }) => {
+const authLink = setContext(async (_, { headers }) => {
   const session = await getSession();
 
   const modifiedHeader = {

@@ -1,8 +1,8 @@
-import { gql } from "@apollo/client";
+import { gql } from "@/saleor/gql";
 
-export const PRODUCT_QUERY = gql`
-  query ProdcutQuery($slug: String!) {
-    product(slug: $slug, channel: "poland") {
+export const PRODUCT_QUERY = gql(`
+  query Prodcut($slug: String!) {
+    product(slug: $slug) {
       name
       slug
       seoDescription
@@ -10,20 +10,6 @@ export const PRODUCT_QUERY = gql`
       media {
         url(format: ORIGINAL)
       }
-      rating
-      seoTitle
-      pricing {
-        priceRange {
-          start {
-            gross {
-              amount
-            }
-          }
-        }
-      }
-        variants {
-          sku
-        }
     }
   }
-`;
+`);
