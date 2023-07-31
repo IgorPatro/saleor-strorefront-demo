@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,6 +9,7 @@ import { PRODUCTS_QUERY } from "@/graphql/queries/products";
 import { CHECKOUT_CREATE_MUTATION } from "@/graphql/mutations/checkout/checkout-create";
 import { CHECKOUT_LINES_ADD_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-add";
 import { useLocalStorage } from "@/utils/useLocalStorage";
+import { ME_QUERY } from "@/graphql/queries/me";
 
 import { type Product } from "@/saleor/graphql";
 
@@ -34,6 +35,7 @@ export default function Home({ products }: HomeProps) {
   const [cartId, setCartId] = useLocalStorage("cartId");
   const [createCheckout] = useMutation(CHECKOUT_CREATE_MUTATION);
   const [addLinesToCheckout] = useMutation(CHECKOUT_LINES_ADD_MUTATION);
+  const { data: me } = useQuery(ME_QUERY);
   const { push } = useRouter();
 
   const onAddToCart = async (variantId: string) => {
@@ -67,7 +69,9 @@ export default function Home({ products }: HomeProps) {
 
   return (
     <div className="p-8">
-      <h1 className="underline text-red-500">Hello world!</h1>
+      <h1 className="underline text-red-500">
+        Hello {me?.me?.firstName} {me?.me?.lastName} ({me?.me?.email})
+      </h1>
       <button
         className="bg-blue-400 px-6 py-2 rounded-lg"
         onClick={() => signOut()}

@@ -13,7 +13,7 @@ import { CHECKOUT_EMAIL_UPDATE_MUTATION } from "@/graphql/mutations/checkout/che
 import { CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-billing-address-update";
 
 const generatePayment: NextApiHandler = async (req, res) => {
-  const { checkoutId, name, email } = req.body;
+  const { checkoutId } = req.body;
 
   const { data: checkout } = await serverClient.query({
     query: CHECKOUT_QUERY,
@@ -27,24 +27,6 @@ const generatePayment: NextApiHandler = async (req, res) => {
       message: "Not found",
     });
   }
-
-  await serverClient.mutate({
-    mutation: CHECKOUT_EMAIL_UPDATE_MUTATION,
-    variables: {
-      checkoutId,
-      email,
-    },
-  });
-
-  await serverClient.mutate({
-    mutation: CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION,
-    variables: {
-      city: "Warsaw",
-      streetAddress1: "Test",
-      postalCode: "00-000",
-      checkoutId,
-    },
-  });
 
   const { data: order } = await serverClient.mutate({
     mutation: ORDER_CREATE_FROM_CHECKOUT_MUTATION,

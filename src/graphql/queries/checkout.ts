@@ -11,6 +11,11 @@ export const CHECKOUT_QUERY = gql(`
           currency
         }
       }
+      billingAddress {
+        city
+        streetAddress1
+        postalCode
+      }
       lines {
         id
         quantity

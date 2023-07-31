@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 import Image from "next/image";
 import { GetServerSideProps } from "next";
@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { CHECKOUT_LINES_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-update";
 import { CHECKOUT_LINES_DELETE_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-delete";
 import { useMutation, useQuery } from "@apollo/client";
+import { client } from "@/utils/apolloClient";
 
 const getFirstImage = (arrayOfInages: any[]) => {
   return arrayOfInages[0];
@@ -41,8 +42,12 @@ const CheckoutPage = ({ cartId }: CheckoutPageProps) => {
     },
   });
 
+  console.log(data);
+
   const onGenerateOrder = async () => {
-    push(`/checkout/${cartId}`);
+    client.clearStore();
+
+    return push(`/checkout/${cartId}`);
   };
 
   const onProductUpdate = async (quantity: number, lineId: string) => {
