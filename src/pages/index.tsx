@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import { serverClient } from "@/utils/apolloClient";
+import { serverClient, client } from "@/utils/apolloClient";
 import { PRODUCTS_QUERY } from "@/graphql/queries/products";
 import { CHECKOUT_CREATE_MUTATION } from "@/graphql/mutations/checkout/checkout-create";
 import { CHECKOUT_LINES_ADD_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-add";
@@ -36,22 +36,6 @@ export default function Home({ products }: HomeProps) {
   const [addLinesToCheckout] = useMutation(CHECKOUT_LINES_ADD_MUTATION);
   const { push } = useRouter();
 
-  const onCheckoutCreate = async (variantId: string) => {
-    const { data } = await createCheckout({
-      variables: {
-        variantId,
-      },
-    });
-
-    if (data && data.checkoutCreate && data.checkoutCreate.errors.length > 0) {
-      // TODO: Handle error message
-      return;
-    }
-
-    setCartId(data?.checkoutCreate?.checkout?.id);
-    return push(`/checkout/${data?.checkoutCreate?.checkout?.id}`);
-  };
-
   const onAddToCart = async (variantId: string) => {
     if (cartId) {
       const { data } = await addLinesToCheckout({
@@ -61,16 +45,9 @@ export default function Home({ products }: HomeProps) {
         },
       });
 
-      if (
-        data &&
-        data.checkoutLinesAdd &&
-        data.checkoutLinesAdd.errors?.length > 0
-      ) {
-        // TODO: Handle error message
-        return;
-      }
+      client.clearStore();
 
-      return push(`/cart/${data?.checkoutLinesAdd?.checkout?.id}`);
+      return push(`/cart/${cartId}`);
     }
 
     const { data } = await createCheckout({
@@ -85,7 +62,7 @@ export default function Home({ products }: HomeProps) {
     }
 
     setCartId(data?.checkoutCreate?.checkout?.id);
-    return push(`/checkout/${data?.checkoutCreate?.checkout?.id}`);
+    return push(`/cart/${data?.checkoutCreate?.checkout?.id}`);
   };
 
   return (
@@ -122,15 +99,6 @@ export default function Home({ products }: HomeProps) {
               }}
             >
               Cart
-            </button>
-            <button
-              className="px-4 py-2 rounded-md bg-blue-200"
-              onClick={(e) => {
-                e.preventDefault();
-                onCheckoutCreate(product.node.defaultVariant.id);
-              }}
-            >
-              Buy alone
             </button>
           </Link>
         ))}

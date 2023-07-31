@@ -32,7 +32,7 @@ const CheckoutPage = ({ checkoutId, checkoutData }: CheckoutPageProps) => {
 
   const onCompleteCheckout = async () => {
     try {
-      const { data } = await axios.post("/api/generate-payment", {
+      const { data } = await axios.post("/api/generate-order", {
         checkoutId,
         name,
         email,
