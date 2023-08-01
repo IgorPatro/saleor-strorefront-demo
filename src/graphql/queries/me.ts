@@ -7,6 +7,9 @@ export const ME_QUERY = gql(`
       email
       firstName
       lastName
+      checkout {
+        id
+      }
     }
   }
 `);

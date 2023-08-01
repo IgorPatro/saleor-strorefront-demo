@@ -32,24 +32,34 @@ interface HomeProps {
 }
 
 export default function Home({ products }: HomeProps) {
-  const [cartId, setCartId] = useLocalStorage("cartId");
+  const [cartId, setCartId] = useLocalStorage<string>("cartId");
   const [createCheckout] = useMutation(CHECKOUT_CREATE_MUTATION);
   const [addLinesToCheckout] = useMutation(CHECKOUT_LINES_ADD_MUTATION);
   const { data: me } = useQuery(ME_QUERY);
   const { push } = useRouter();
 
+  const onRedirectToCart = () => {
+    const currentCartId = me?.me?.checkout?.id ?? cartId;
+
+    if (currentCartId) {
+      return push(`/cart/${currentCartId}`);
+    }
+  };
+
   const onAddToCart = async (variantId: string) => {
-    if (cartId) {
-      const { data } = await addLinesToCheckout({
+    let currentCartId = me?.me?.checkout?.id ?? cartId;
+
+    if (currentCartId) {
+      await addLinesToCheckout({
         variables: {
           variantId,
-          checkoutId: cartId,
+          checkoutId: currentCartId,
         },
       });
 
       client.clearStore();
 
-      return push(`/cart/${cartId}`);
+      return push(`/cart/${currentCartId}`);
     }
 
     const { data } = await createCheckout({
@@ -79,6 +89,12 @@ export default function Home({ products }: HomeProps) {
         Sign out
       </button>
       <br />
+      <button
+        className="bg-blue-400 px-6 py-2 rounded-lg"
+        onClick={onRedirectToCart}
+      >
+        Koszyk
+      </button>
       <div className="flex gap-4">
         {products.map((product: any) => (
           <Link
