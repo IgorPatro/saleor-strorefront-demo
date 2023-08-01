@@ -1,16 +1,9 @@
-import {
-  P24,
-  Order,
-  Currency,
-  Country,
-  Language,
-} from "@ingameltd/node-przelewy24";
+import { P24, Currency, Country, Language } from "@ingameltd/node-przelewy24";
 import { NextApiHandler } from "next";
 import { serverClient } from "@/utils/apolloClient";
 import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 import { ORDER_CREATE_FROM_CHECKOUT_MUTATION } from "@/graphql/mutations/order/order-create-from-checkout";
-import { CHECKOUT_EMAIL_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-email-update";
-import { CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-billing-address-update";
+import { randomString } from "@/utils/randomString";
 
 const generatePayment: NextApiHandler = async (req, res) => {
   const { checkoutId } = req.body;
@@ -56,7 +49,7 @@ const generatePayment: NextApiHandler = async (req, res) => {
   );
 
   const p24Transaction = await p24.createTransaction({
-    sessionId: "fnjodsahgodsh",
+    sessionId: order.orderCreateFromCheckout?.order?.id ?? randomString(),
     amount:
       Number(order?.orderCreateFromCheckout?.order?.total.gross.amount) * 100,
     currency: Currency.PLN,

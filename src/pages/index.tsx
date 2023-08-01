@@ -50,12 +50,38 @@ export default function Home({ products }: HomeProps) {
     let currentCartId = me?.me?.checkout?.id ?? cartId;
 
     if (currentCartId) {
-      await addLinesToCheckout({
+      const { data } = await addLinesToCheckout({
         variables: {
           variantId,
           checkoutId: currentCartId,
         },
       });
+
+      if (
+        data &&
+        data?.checkoutLinesAdd &&
+        data?.checkoutLinesAdd?.errors?.length > 0
+      ) {
+        setCartId(undefined);
+
+        const { data } = await createCheckout({
+          variables: {
+            variantId,
+          },
+        });
+
+        if (
+          data &&
+          data.checkoutCreate &&
+          data.checkoutCreate.errors.length > 0
+        ) {
+          // TODO: Handle error message
+          return;
+        }
+
+        setCartId(data?.checkoutCreate?.checkout?.id);
+        return push(`/cart/${data?.checkoutCreate?.checkout?.id}`);
+      }
 
       client.clearStore();
 
