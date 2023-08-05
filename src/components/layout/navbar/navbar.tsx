@@ -3,10 +3,17 @@ import React from "react";
 import { BiUser } from "react-icons/bi";
 import { AiFillHeart } from "react-icons/ai";
 import { AiOutlineShoppingCart } from "react-icons/ai";
+import { AiOutlineSearch } from "react-icons/ai";
 import { useSession, signOut } from "next-auth/react";
 import { ME_QUERY } from "@/graphql/queries/me";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import {
+  AiFillFacebook,
+  AiFillInstagram,
+  AiFillTwitterSquare,
+} from "react-icons/ai";
+import { BiLogoTiktok } from "react-icons/bi";
 
 import {
   DropdownMenu,
@@ -17,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 import { useLocalStorage } from "@/utils/use-local-storage";
 
@@ -37,12 +45,13 @@ export const Navbar = () => {
   return (
     <>
       <div className="flex w-full p-4 shadow-lg items-center justify-between">
-        <Link href="/">Logo</Link>
-        <input
-          type="text"
-          placeholder="Search..."
-          className="px-3 py-1 rounded-xl w-80"
-        />
+        <div className="flex gap-1">
+          <AiFillFacebook />
+          <AiFillInstagram />
+          <AiFillTwitterSquare />
+          <BiLogoTiktok />
+        </div>
+        <Link href="/">Logo ❤️</Link>
         <div className="flex gap-1">
           {session ? (
             <DropdownMenu>
@@ -54,7 +63,9 @@ export const Navbar = () => {
                   {`Hello ${session.user.name}!`}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href="/account">Profile</Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <Button
@@ -72,11 +83,11 @@ export const Navbar = () => {
               <BiUser className="w-5 h-5" />
             </Link>
           )}
+          <Link href="/search">
+            <AiOutlineSearch className="w-5 h-5" />
+          </Link>
           <button onClick={onRedirectToCart}>
             <AiOutlineShoppingCart className="w-5 h-5" />
-          </button>
-          <button>
-            <AiFillHeart className="w-5 h-5" />
           </button>
         </div>
       </div>

@@ -97,16 +97,14 @@ export default function Home({ products }: HomeProps) {
   };
 
   return (
-    <div className="p-8">
-      <div className="flex gap-4">
-        {products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onAddToCart={onAddToCart}
-          />
-        ))}
-      </div>
+    <div className="flex gap-4">
+      {products.map((product) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          onAddToCart={onAddToCart}
+        />
+      ))}
     </div>
   );
 }
