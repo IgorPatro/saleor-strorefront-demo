@@ -1,11 +1,8 @@
 import React from "react";
 import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
 import { useQuery } from "@apollo/client";
 import { CheckoutDataForm } from "@/components/checkout/checkout-data-form";
-import { CartSummary } from "@/components/cart/cart-summary";
-import { CartProductItem } from "@/components/cart/cart-product-item";
 import { CheckoutProductItem } from "@/components/checkout/checkout-product-item";
 import { type CheckoutLine } from "@/saleor/graphql";
 
@@ -22,13 +19,7 @@ interface CheckoutPageProps {
 }
 
 const CheckoutPage = ({ checkoutId }: CheckoutPageProps) => {
-  const { push } = useRouter();
-
-  const {
-    data,
-    loading: isCheckoutQueryLoading,
-    refetch,
-  } = useQuery(CHECKOUT_QUERY, {
+  const { data } = useQuery(CHECKOUT_QUERY, {
     variables: {
       checkoutId: checkoutId,
     },
