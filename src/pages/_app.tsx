@@ -6,6 +6,8 @@ import { SessionProvider } from "next-auth/react";
 import { client } from "@/utils/apollo-client";
 import "@/styles/global.css";
 
+import { Layout } from "@/components/layout";
+
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -14,11 +16,17 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
+const defaultGetLayout = (page: ReactNode): ReactNode => {
+  return <Layout>{page}</Layout>;
+};
+
 function MyApp({
   Component,
   pageProps: { session, ...pageProps },
 }: AppPropsWithLayout) {
-  const getLayout = Component.getLayout ?? ((page: ReactElement) => page);
+  const getLayout = Component.getLayout
+    ? Component.getLayout
+    : defaultGetLayout;
 
   return (
     <SessionProvider session={session}>
