@@ -1,5 +1,5 @@
 import React from "react";
-import { serverClient } from "@/utils/apolloClient";
+import { serverClient } from "@/utils/apollo-client";
 import { PRODUCT_QUERY } from "@/graphql/queries/product";
 import { GetServerSideProps } from "next";
 

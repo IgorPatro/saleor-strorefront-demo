@@ -4,11 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import { serverClient, client } from "@/utils/apolloClient";
+import { serverClient, client } from "@/utils/apollo-client";
 import { PRODUCTS_QUERY } from "@/graphql/queries/products";
 import { CHECKOUT_CREATE_MUTATION } from "@/graphql/mutations/checkout/checkout-create";
 import { CHECKOUT_LINES_ADD_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-add";
-import { useLocalStorage } from "@/utils/useLocalStorage";
+import { useLocalStorage } from "@/utils/use-local-storage";
 import { ME_QUERY } from "@/graphql/queries/me";
 
 import { type Product } from "@/saleor/graphql";

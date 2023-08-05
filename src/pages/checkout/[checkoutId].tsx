@@ -1,11 +1,9 @@
 import React from "react";
-import { serverClient } from "@/utils/apolloClient";
 import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 import { CHECKOUT_EMAIL_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-email-update";
 import Image from "next/image";
 import axios from "axios";
 import { GetServerSideProps } from "next";
-import { type CheckoutQuery } from "@/saleor/graphql";
 import { CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-billing-address-update";
 import { useRouter } from "next/router";
 import { useMutation, useQuery } from "@apollo/client";

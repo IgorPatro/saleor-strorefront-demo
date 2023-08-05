@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import { AppProps } from "next/app";
 import React, { ReactElement, ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
-import { client } from "@/utils/apolloClient";
+import { client } from "@/utils/apollo-client";
 import "@/styles/global.css";
 
 type NextPageWithLayout = NextPage & {

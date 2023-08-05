@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { CHECKOUT_LINES_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-update";
 import { CHECKOUT_LINES_DELETE_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-delete";
 import { useMutation, useQuery } from "@apollo/client";
-import { client } from "@/utils/apolloClient";
+import { client } from "@/utils/apollo-client";
 
 const getFirstImage = (arrayOfInages: any[]) => {
   return arrayOfInages[0];
@@ -99,21 +99,11 @@ const CheckoutPage = ({ cartId }: CheckoutPageProps) => {
               className="w-10 h-10 text-center border border-black"
               defaultValue={line.quantity}
               placeholder="1"
-              onBlur={(e) => onProductUpdate(Number(e.target.value), line.id)}
-              disabled={
-                isUpdateMutationLoading ||
-                isDeleteMutationLoading ||
-                isCheckoutQueryLoading
-              }
+              onChange={(e) => onProductUpdate(Number(e.target.value), line.id)}
             />
             x {line.variant.pricing?.price?.gross.amount}PLN
             <button
               className="bg-blue-500 text-white px-2 py-1 disabled:bg-red-500"
-              disabled={
-                isUpdateMutationLoading ||
-                isDeleteMutationLoading ||
-                isCheckoutQueryLoading
-              }
               onClick={() => onProductDelete(line.id)}
             >
               Delete
@@ -121,9 +111,17 @@ const CheckoutPage = ({ cartId }: CheckoutPageProps) => {
           </div>
         </div>
       ))}
+      <div>
+        <h1>Total: {data.checkout?.totalPrice?.gross.amount}PLN</h1>
+      </div>
       <button
-        className="px-10 py-2 bg-blue-500 text-white font-bold"
+        className="px-10 py-2 bg-blue-500 text-white font-bold disabled:bg-red-500"
         onClick={onGenerateOrder}
+        disabled={
+          isUpdateMutationLoading ||
+          isDeleteMutationLoading ||
+          isCheckoutQueryLoading
+        }
       >
         Make an order
       </button>
