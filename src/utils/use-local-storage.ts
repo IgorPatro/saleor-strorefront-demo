@@ -1,6 +1,9 @@
 import { useState } from "react";
 
-export const useLocalStorage = (key: string, initialValue: any = "") => {
+export const useLocalStorage = <T>(
+  key: string,
+  initialValue?: T
+): [T | undefined | string, (newValue: T | undefined) => void] => {
   const [storedValue, setStoredValue] = useState(() => {
     if (typeof window === "undefined") return initialValue;
 

@@ -1,21 +1,9 @@
 import { gql } from "@/saleor/gql";
 
-export const CHECKOUT_QUERY = gql(`
-  query Checkout($checkoutId: ID!) {
-    checkout(id: $checkoutId) {
+export const ORDER_QUERY = gql(`
+  query Order($orderId: ID!) {
+    order(id: $orderId) {
       created
-      email
-      totalPrice {
-        gross {
-          amount
-          currency
-        }
-      }
-      billingAddress {
-        city
-        streetAddress1
-        postalCode
-      }
       lines {
         id
         quantity
@@ -30,7 +18,6 @@ export const CHECKOUT_QUERY = gql(`
             }
           }
           product {
-            name
             media {
               url(format: ORIGINAL)
             }

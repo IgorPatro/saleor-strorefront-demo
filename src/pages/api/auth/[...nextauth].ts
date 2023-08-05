@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { serverClient } from "@/utils/apolloClient";
+import { serverClient } from "@/utils/apollo-client";
 import { SIGNIN_MUTATION } from "@/graphql/mutations/signin";
 import { type DefaultSession } from "next-auth";
 
