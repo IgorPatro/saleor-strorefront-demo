@@ -37,6 +37,12 @@ export const CHECKOUT_QUERY = gql(`
           }
         }
       }
+      isShippingRequired
+      shippingMethods {
+        name
+        id
+        metafields
+      }
     }
   }
 `);
