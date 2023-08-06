@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { serverClient } from "@/utils/apollo-client";
+import { serverClient, client } from "@/utils/apollo-client";
 import { SIGNIN_MUTATION } from "@/graphql/mutations/signin";
 import { type DefaultSession } from "next-auth";
 
@@ -37,7 +37,7 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        const { data } = await serverClient.mutate({
+        const { data } = await client.mutate({
           mutation: SIGNIN_MUTATION,
           variables: credentials,
         });
