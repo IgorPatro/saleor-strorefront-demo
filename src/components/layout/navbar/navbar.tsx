@@ -1,7 +1,6 @@
 import { useQuery } from "@apollo/client";
 import React from "react";
 import { BiUser } from "react-icons/bi";
-import { AiFillHeart } from "react-icons/ai";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { AiOutlineSearch } from "react-icons/ai";
 import { useSession, signOut } from "next-auth/react";

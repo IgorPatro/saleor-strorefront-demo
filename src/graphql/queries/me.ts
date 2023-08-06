@@ -10,6 +10,12 @@ export const ME_QUERY = gql(`
       checkout {
         id
       }
+      addresses {
+        id
+        city
+        postalCode
+        streetAddress1
+      }
     }
   }
 `);
