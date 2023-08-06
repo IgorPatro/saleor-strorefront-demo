@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 
 import { AddressTab } from "@/components/account/address-tab";
 import { CustomerTab } from "@/components/account/customer-tab";
+import { OrdersTab } from "@/components/account/orders-tab";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getSession({
@@ -66,7 +67,9 @@ const AccountPage = () => {
         <TabsContent value="address">
           <AddressTab me={me} />
         </TabsContent>
-        <TabsContent value="orders">Change your password here.</TabsContent>
+        <TabsContent className="w-full" value="orders">
+          <OrdersTab me={me} />
+        </TabsContent>
       </Tabs>
     </div>
   );

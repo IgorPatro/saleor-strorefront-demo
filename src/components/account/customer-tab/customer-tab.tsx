@@ -5,8 +5,9 @@ import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { type MeQuery } from "@/saleor/graphql";
-import { useMutation } from "@apollo/client";
+import { useMutation, useApolloClient } from "@apollo/client";
 import { ACCOUNT_UPDATE_MUTATION } from "@/graphql/mutations/account/account-update";
+import { ME_QUERY } from "@/graphql/queries/me";
 
 interface CustomerTabProps {
   me: MeQuery;
@@ -18,6 +19,8 @@ const formSchema = z.object({
 });
 
 export const CustomerTab = ({ me }: CustomerTabProps) => {
+  const client = useApolloClient();
+
   const {
     register,
     handleSubmit,
@@ -33,11 +36,13 @@ export const CustomerTab = ({ me }: CustomerTabProps) => {
   const [updateUser] = useMutation(ACCOUNT_UPDATE_MUTATION);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const data = await updateUser({
+    await updateUser({
       variables: values,
     });
 
-    console.log(data);
+    return await client.refetchQueries({
+      include: [ME_QUERY],
+    });
   };
 
   return (

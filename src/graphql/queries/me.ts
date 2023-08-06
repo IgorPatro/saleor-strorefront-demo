@@ -18,17 +18,44 @@ export const ME_QUERY = gql(`
         firstName
         lastName
         phone
+        isDefaultBillingAddress
+        isDefaultShippingAddress
       }
-      orders(first: 99) {
+      orders(first: 10) {
         edges {
           node {
             id
             status
+            created
             total {
               gross {
                 amount
               }
             }
+            paymentStatus
+            lines {
+              id
+              quantity
+              variant {
+                pricing {
+                  price {
+                    gross {
+                      amount
+                      currency
+                    }
+                  }
+                }
+                product {
+                  media {
+                    id
+                    url(format: ORIGINAL)
+                  }
+                  name
+                }
+                name
+              }
+            }
+            isPaid
           }
         }
       }

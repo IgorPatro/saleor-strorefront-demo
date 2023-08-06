@@ -1,6 +1,6 @@
 import { type Product } from "@/saleor/graphql";
 
-type Images = Product["media"];
+export type Images = Product["media"];
 
 export const getDefaultProductImage = (images: Images) => {
   if (!images || images.length === 0) {

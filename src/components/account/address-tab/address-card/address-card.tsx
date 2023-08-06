@@ -1,16 +1,16 @@
 import React from "react";
 import { type Address } from "@/saleor/graphql";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { ACCOUNT_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/account/account-address-update";
 import { ACCOUNT_ADDRESS_DELETE_MUTATION } from "@/graphql/mutations/account/account-address-delete";
+import { ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION } from "@/graphql/mutations/account/account-set-default-address";
 import { ME_QUERY } from "@/graphql/queries/me";
 import { useMutation, useApolloClient } from "@apollo/client";
+import { AddressTypeEnum } from "@/saleor/graphql";
 
 import { useAddressForm } from "../hooks";
-import { AddressFormSchema, type AddressFormInterface } from "../types";
+import { type AddressFormInterface } from "../types";
 
 interface AddressCardProps {
   address: Address;
@@ -26,6 +26,7 @@ export const AddressCard = ({ address }: AddressCardProps) => {
   const [deleteAddress, { loading: isDeleteMutationLoading }] = useMutation(
     ACCOUNT_ADDRESS_DELETE_MUTATION
   );
+  const [setDefaultAddress] = useMutation(ACCOUNT_SET_DEFAULT_ADDRESS_MUTATION);
 
   const onSubmit = async (values: AddressFormInterface) => {
     await updateAddress({
@@ -54,6 +55,26 @@ export const AddressCard = ({ address }: AddressCardProps) => {
     });
   };
 
+  const onMakeDefaultAddress = async (addressId: string) => {
+    await setDefaultAddress({
+      variables: {
+        addressId,
+        type: AddressTypeEnum.Billing,
+      },
+    });
+
+    await setDefaultAddress({
+      variables: {
+        addressId,
+        type: AddressTypeEnum.Shipping,
+      },
+    });
+
+    return await client.refetchQueries({
+      include: [ME_QUERY],
+    });
+  };
+
   return (
     <div key={address.id}>
       {isEditMode ? (
@@ -71,6 +92,9 @@ export const AddressCard = ({ address }: AddressCardProps) => {
         </form>
       ) : (
         <div className="flex flex-col gap-1">
+          {address.isDefaultBillingAddress ? (
+            <p className="font-bold">Default</p>
+          ) : null}
           <div>
             {address.firstName} {address.lastName}
           </div>
@@ -89,6 +113,15 @@ export const AddressCard = ({ address }: AddressCardProps) => {
             >
               Delete
             </Button>
+            {address.isDefaultBillingAddress ? null : (
+              <Button
+                disabled={isDeleteMutationLoading}
+                onClick={() => onMakeDefaultAddress(address.id)}
+                variant="outline"
+              >
+                Make default
+              </Button>
+            )}
           </div>
         </div>
       )}
