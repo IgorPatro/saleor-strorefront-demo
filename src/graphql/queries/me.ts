@@ -19,6 +19,19 @@ export const ME_QUERY = gql(`
         lastName
         phone
       }
+      orders(first: 99) {
+        edges {
+          node {
+            id
+            status
+            total {
+              gross {
+                amount
+              }
+            }
+          }
+        }
+      }
     }
   }
 `);
