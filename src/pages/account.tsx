@@ -33,13 +33,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 const AccountPage = () => {
   const { data: me } = useQuery(ME_QUERY);
 
+  console.log(me);
+
   if (!me) {
     return <div>You are not logged in. Please log in to see your account.</div>;
   }
 
   return (
     <div>
-      <Tabs defaultValue="customer" className="flex gap-10">
+      <Tabs defaultValue="customer" className="flex items-start gap-10">
         <TabsList className="flex flex-col gap-2 h-auto bg-transparent">
           <TabsTrigger className="w-full" value="customer">
             Customer

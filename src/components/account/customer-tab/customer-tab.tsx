@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { type MeQuery } from "@/saleor/graphql";
 import { useMutation } from "@apollo/client";
-import { USER_UPDATE_MUTATION } from "@/graphql/mutations/user/user-update";
+import { ACCOUNT_UPDATE_MUTATION } from "@/graphql/mutations/account/account-update";
 
 interface CustomerTabProps {
   me: MeQuery;
@@ -30,7 +30,7 @@ export const CustomerTab = ({ me }: CustomerTabProps) => {
     resolver: zodResolver(formSchema),
   });
 
-  const [updateUser] = useMutation(USER_UPDATE_MUTATION);
+  const [updateUser] = useMutation(ACCOUNT_UPDATE_MUTATION);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const data = await updateUser({

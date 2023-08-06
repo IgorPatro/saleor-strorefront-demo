@@ -15,6 +15,9 @@ export const ME_QUERY = gql(`
         city
         postalCode
         streetAddress1
+        firstName
+        lastName
+        phone
       }
     }
   }
