@@ -1,6 +1,7 @@
 import { ApolloProvider } from "@apollo/client";
 import { NextPage } from "next";
 import { AppProps } from "next/app";
+import Script from "next/script";
 import React, { ReactElement, ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
 import { client } from "@/utils/apollo-client";
@@ -29,11 +30,13 @@ function MyApp({
     : defaultGetLayout;
 
   return (
-    <SessionProvider session={session}>
-      <ApolloProvider client={client}>
-        {getLayout(<Component {...pageProps} />)}
-      </ApolloProvider>
-    </SessionProvider>
+    <>
+      <SessionProvider session={session}>
+        <ApolloProvider client={client}>
+          {getLayout(<Component {...pageProps} />)}
+        </ApolloProvider>
+      </SessionProvider>
+    </>
   );
 }
 

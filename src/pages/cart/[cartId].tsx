@@ -1,16 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
-import Image from "next/image";
 import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import { CHECKOUT_LINES_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-update";
 import { CHECKOUT_LINES_DELETE_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-delete";
 import { useMutation, useQuery } from "@apollo/client";
 import { client } from "@/utils/apollo-client";
-
-const getFirstImage = (arrayOfInages: any[]) => {
-  return arrayOfInages[0];
-};
+import { CartProductItem } from "@/components/cart/cart-product-item";
+import { type CheckoutLine } from "@/saleor/graphql";
+import { CartSummary } from "@/components/cart/cart-summary/cart-summary";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const cartId = ctx.query["cartId"] as string;
@@ -41,8 +39,6 @@ const CheckoutPage = ({ cartId }: CheckoutPageProps) => {
       checkoutId: cartId,
     },
   });
-
-  console.log(data);
 
   const onGenerateOrder = async () => {
     client.clearStore();
@@ -78,53 +74,26 @@ const CheckoutPage = ({ cartId }: CheckoutPageProps) => {
   if (!data) return null;
 
   return (
-    <div>
-      {cartId}
-      {data.checkout?.lines.map((line) => (
-        <div key={line.id} className="p-2 flex items-center gap-8">
-          <div>
-            {line.variant.product.name}
-            <br />
-            {line.id}
-            <br />
-            <Image
-              src={getFirstImage(line.variant.product.media ?? []).url}
-              alt="not yet"
-              width={300}
-              height={500}
-            />
-          </div>
-          <div>
-            <input
-              className="w-10 h-10 text-center border border-black"
-              defaultValue={line.quantity}
-              placeholder="1"
-              onChange={(e) => onProductUpdate(Number(e.target.value), line.id)}
-            />
-            x {line.variant.pricing?.price?.gross.amount}PLN
-            <button
-              className="bg-blue-500 text-white px-2 py-1 disabled:bg-red-500"
-              onClick={() => onProductDelete(line.id)}
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      ))}
-      <div>
-        <h1>Total: {data.checkout?.totalPrice?.gross.amount}PLN</h1>
+    <div className="flex gap-10">
+      <div className="w-full flex flex-col gap-3">
+        {data.checkout?.lines.map((line) => (
+          <CartProductItem
+            key={line.id}
+            line={line as CheckoutLine}
+            onDelete={onProductDelete}
+            onUpdate={onProductUpdate}
+          />
+        ))}
       </div>
-      <button
-        className="px-10 py-2 bg-blue-500 text-white font-bold disabled:bg-red-500"
-        onClick={onGenerateOrder}
-        disabled={
+      <CartSummary
+        isDisabled={
           isUpdateMutationLoading ||
           isDeleteMutationLoading ||
           isCheckoutQueryLoading
         }
-      >
-        Make an order
-      </button>
+        totalPrice={data.checkout?.totalPrice?.gross.amount ?? 0}
+        onGenerateOrder={onGenerateOrder}
+      />
     </div>
   );
 };

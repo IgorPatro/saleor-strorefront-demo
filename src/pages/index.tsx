@@ -1,7 +1,4 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { signOut } from "next-auth/react";
-import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/router";
 
 import { serverClient, client } from "@/utils/apollo-client";
@@ -11,6 +8,8 @@ import { CHECKOUT_LINES_ADD_MUTATION } from "@/graphql/mutations/checkout/checko
 import { useLocalStorage } from "@/utils/use-local-storage";
 import { ME_QUERY } from "@/graphql/queries/me";
 
+import { ProductCard } from "@/components/product/product-card";
+
 import { type Product } from "@/saleor/graphql";
 
 export const getServerSideProps = async () => {
@@ -18,7 +17,9 @@ export const getServerSideProps = async () => {
     query: PRODUCTS_QUERY,
   });
 
-  const products = data ? data.products?.edges : [];
+  const products = data
+    ? data.products?.edges.map(({ node }) => ({ ...node }))
+    : [];
 
   return {
     props: {
@@ -37,14 +38,6 @@ export default function Home({ products }: HomeProps) {
   const [addLinesToCheckout] = useMutation(CHECKOUT_LINES_ADD_MUTATION);
   const { data: me } = useQuery(ME_QUERY);
   const { push } = useRouter();
-
-  const onRedirectToCart = () => {
-    const currentCartId = me?.me?.checkout?.id ?? cartId;
-
-    if (currentCartId) {
-      return push(`/cart/${currentCartId}`);
-    }
-  };
 
   const onAddToCart = async (variantId: string) => {
     let currentCartId = me?.me?.checkout?.id ?? cartId;
@@ -104,51 +97,14 @@ export default function Home({ products }: HomeProps) {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="underline text-red-500">
-        Hello {me?.me?.firstName} {me?.me?.lastName} ({me?.me?.email})
-      </h1>
-      <button
-        className="bg-blue-400 px-6 py-2 rounded-lg"
-        onClick={() => signOut()}
-      >
-        Sign out
-      </button>
-      <br />
-      <button
-        className="bg-blue-400 px-6 py-2 rounded-lg"
-        onClick={onRedirectToCart}
-      >
-        Koszyk
-      </button>
-      <div className="flex gap-4">
-        {products.map((product: any) => (
-          <Link
-            href={`/product/${product.node.slug}`}
-            key={product.node.id}
-            className="w-64 bg-slate-100 p-4"
-          >
-            <h2>{product.node.name}</h2>
-            <Image
-              src={product.node.media[0].url}
-              alt="not yet"
-              width={300}
-              height={500}
-            />
-            {product.node.defaultVariant.pricing.price.gross.amount}PLN
-            <br />
-            <button
-              className="px-4 py-2 rounded-md bg-blue-200"
-              onClick={(e) => {
-                e.preventDefault();
-                onAddToCart(product.node.defaultVariant.id);
-              }}
-            >
-              Cart
-            </button>
-          </Link>
-        ))}
-      </div>
+    <div className="flex gap-4">
+      {products.map((product) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          onAddToCart={onAddToCart}
+        />
+      ))}
     </div>
   );
 }
