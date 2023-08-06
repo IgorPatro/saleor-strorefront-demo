@@ -2,7 +2,7 @@ import React from "react";
 import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 import { GetServerSideProps } from "next";
 import { useQuery } from "@apollo/client";
-import { CheckoutDataForm } from "@/components/checkout/checkout-data-form";
+import { CheckoutForm } from "@/components/checkout/checkout-form";
 import { CheckoutProductItem } from "@/components/checkout/checkout-product-item";
 import { type CheckoutLine } from "@/saleor/graphql";
 
@@ -29,7 +29,7 @@ const CheckoutPage = ({ checkoutId }: CheckoutPageProps) => {
 
   return (
     <div className="p-4 flex gap-10">
-      <CheckoutDataForm checkoutId={checkoutId} checkoutData={data} />
+      <CheckoutForm checkoutId={checkoutId} checkoutData={data} />
       <div className="w-full flex flex-col gap-3">
         {data.checkout?.lines.map((line) => (
           <CheckoutProductItem key={line.id} line={line as CheckoutLine} />
