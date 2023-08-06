@@ -6,24 +6,31 @@ import { CHECKOUT_EMAIL_UPDATE_MUTATION } from "@/graphql/mutations/checkout/che
 import { CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-billing-address-update";
 import { CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-address-update";
 import { Button } from "@/components/ui/button";
+import { type ApolloQueryResult } from "@apollo/client";
+import { type CheckoutQuery } from "@/saleor/graphql";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { type CheckoutFormInterface } from "../types";
 
 interface CheckoutCustomerProps {
   checkoutId: string;
-  parcelLockerShippingMethodId: string | null;
   onNextStep: () => void;
+  refetchCheckout: () => Promise<ApolloQueryResult<CheckoutQuery>>;
 }
 
 export const CheckoutCustomer = ({
   checkoutId,
-  parcelLockerShippingMethodId,
   onNextStep,
+  refetchCheckout,
 }: CheckoutCustomerProps) => {
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [showDifferentShippingAddress, setShowDifferentShippingAddress] =
+    React.useState(false);
   const {
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors, isValid, isSubmitting },
     getValues,
+    trigger,
   } = useFormContext<CheckoutFormInterface>();
   const [updateEmail] = useMutation(CHECKOUT_EMAIL_UPDATE_MUTATION);
   const [updateBillingAddress] = useMutation(
@@ -34,7 +41,11 @@ export const CheckoutCustomer = ({
   );
 
   const onMoveToShipping = async () => {
+    trigger();
+    if (!isValid) return;
     const values = getValues();
+
+    setIsLoading(true);
 
     await updateEmail({
       variables: {
@@ -52,33 +63,40 @@ export const CheckoutCustomer = ({
       },
     });
 
-    const shippingAddress = {
-      city:
-        values.shippingMethodId === parcelLockerShippingMethodId
-          ? values.shippingAddressCity
-          : values.billingAddressCity,
-      streetAddress1:
-        values.shippingMethodId === parcelLockerShippingMethodId
-          ? values.shippingAddressStreet
-          : values.billingAddressStreet,
-      postalCode:
-        values.shippingMethodId === parcelLockerShippingMethodId
-          ? values.shippingPostalCode
-          : values.billingPostalCode,
-    };
+    // const shippingAddress = {
+    //   city:
+    //     values.shippingMethodId === parcelLockerShippingMethodId
+    //       ? values.shippingAddressCity
+    //       : values.billingAddressCity,
+    //   streetAddress1:
+    //     values.shippingMethodId === parcelLockerShippingMethodId
+    //       ? values.shippingAddressStreet
+    //       : values.billingAddressStreet,
+    //   postalCode:
+    //     values.shippingMethodId === parcelLockerShippingMethodId
+    //       ? values.shippingPostalCode
+    //       : values.billingPostalCode,
+    // };
 
     await updateShippingAddress({
       variables: {
         checkoutId,
-        ...shippingAddress,
+        // ...shippingAddress,
+        city: values.billingAddressCity,
+        streetAddress1: values.billingAddressStreet,
+        postalCode: values.billingPostalCode,
       },
     });
 
-    onNextStep();
+    await refetchCheckout();
+
+    setIsLoading(false);
+
+    return onNextStep();
   };
 
   return (
-    <div>
+    <div className="flex flex-col gap-4 justify-end">
       <h1 className="text-2xl font-semibold">Customer data</h1>
 
       <div className="flex gap-3">
@@ -114,20 +132,61 @@ export const CheckoutCustomer = ({
           className={errors?.billingAddressStreet && "border-red-500"}
         />
         <Input
-          placeholder="City"
-          {...register("billingAddressCity")}
-          className={errors?.billingAddressCity && "border-red-500"}
-        />
-        <Input
           placeholder="Postal code"
           {...register("billingPostalCode")}
           className={errors?.billingPostalCode && "border-red-500"}
         />
+        <Input
+          placeholder="City"
+          {...register("billingAddressCity")}
+          className={errors?.billingAddressCity && "border-red-500"}
+        />
       </div>
 
-      <div>Inny adres rozliczeniowy?</div>
+      <div className="flex gap-2 items-center">
+        <Checkbox
+          id="differentShippingAddress"
+          checked={showDifferentShippingAddress}
+          onCheckedChange={(checked) => {
+            setShowDifferentShippingAddress(checked as boolean);
+          }}
+        />
+        <div className="grid gap-1.5 leading-none">
+          <label
+            htmlFor="differentShippingAddress"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Different shipping address
+          </label>
+        </div>
+      </div>
 
-      <Button onClick={() => onMoveToShipping()} disabled={isSubmitting}>
+      {showDifferentShippingAddress ? (
+        <div className="flex gap-3">
+          <Input
+            placeholder="Address"
+            {...register("shippingAddressStreet")}
+            className={errors?.shippingAddressStreet && "border-red-500"}
+          />
+          <Input
+            placeholder="Postal code"
+            {...register("shippingPostalCode")}
+            className={errors?.shippingPostalCode && "border-red-500"}
+          />
+          <Input
+            placeholder="City"
+            {...register("shippingAddressCity")}
+            className={errors?.shippingAddressCity && "border-red-500"}
+          />
+        </div>
+      ) : null}
+
+      <Button
+        className="flex self-end"
+        type="button"
+        onClick={() => onMoveToShipping()}
+        disabled={isLoading}
+      >
         Continue to shipping
       </Button>
     </div>

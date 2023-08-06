@@ -12,6 +12,7 @@ import { CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/c
 import { CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-method-update";
 import { useMutation } from "@apollo/client";
 import { CheckoutQuery } from "@/saleor/graphql";
+import { type ApolloQueryResult } from "@apollo/client";
 
 import { CheckoutCustomer } from "./checkout-customer";
 import { CheckoutShipping } from "./checkout-shipping";
@@ -20,11 +21,13 @@ import { CheckoutFormSchema, type CheckoutFormInterface } from "./types";
 interface CheckoutDataFormProps {
   checkoutId: string;
   checkoutData: CheckoutQuery;
+  refetchCheckout: () => Promise<ApolloQueryResult<CheckoutQuery>>;
 }
 
 export const CheckoutForm = ({
   checkoutId,
   checkoutData,
+  refetchCheckout,
 }: CheckoutDataFormProps) => {
   const [step, setStep] = React.useState<"data" | "shipping" | "payment">(
     "data"
@@ -88,7 +91,7 @@ export const CheckoutForm = ({
           <CheckoutCustomer
             onNextStep={() => setStep("shipping")}
             checkoutId={checkoutId}
-            parcelLockerShippingMethodId={parcelLockerShippingMethodId}
+            refetchCheckout={refetchCheckout}
           />
         )}
         {step === "shipping" && (

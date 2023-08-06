@@ -19,7 +19,7 @@ interface CheckoutPageProps {
 }
 
 const CheckoutPage = ({ checkoutId }: CheckoutPageProps) => {
-  const { data } = useQuery(CHECKOUT_QUERY, {
+  const { data, refetch } = useQuery(CHECKOUT_QUERY, {
     variables: {
       checkoutId: checkoutId,
     },
@@ -29,7 +29,11 @@ const CheckoutPage = ({ checkoutId }: CheckoutPageProps) => {
 
   return (
     <div className="p-4 flex gap-10">
-      <CheckoutForm checkoutId={checkoutId} checkoutData={data} />
+      <CheckoutForm
+        checkoutId={checkoutId}
+        checkoutData={data}
+        refetchCheckout={refetch}
+      />
       <div className="w-full flex flex-col gap-3">
         {data.checkout?.lines.map((line) => (
           <CheckoutProductItem key={line.id} line={line as CheckoutLine} />

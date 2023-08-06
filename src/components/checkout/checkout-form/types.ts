@@ -8,10 +8,10 @@ export const CheckoutFormSchema = z.object({
   billingAddressCity: z.string().min(1),
   billingAddressStreet: z.string().min(1),
   billingPostalCode: z.string().min(1),
-  shippingAddressCity: z.string().min(1),
-  shippingAddressStreet: z.string().min(1),
-  shippingPostalCode: z.string().min(1),
-  shippingMethodId: z.string().min(1),
+  shippingAddressCity: z.string().optional(),
+  shippingAddressStreet: z.string().optional(),
+  shippingPostalCode: z.string().optional(),
+  shippingMethodId: z.string(),
 });
 
 export type CheckoutFormInterface = z.infer<typeof CheckoutFormSchema>;

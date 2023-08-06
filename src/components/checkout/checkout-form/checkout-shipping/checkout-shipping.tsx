@@ -41,7 +41,7 @@ export const CheckoutShipping = ({ checkoutData }: CheckoutShippingProps) => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col gap-4 justify-end">
       <h1 className="text-2xl font-semibold">Dostawa</h1>
       <FormField
         control={control}
@@ -81,8 +81,8 @@ export const CheckoutShipping = ({ checkoutData }: CheckoutShippingProps) => {
           </FormItem>
         )}
       />
-      <Button type="submit" disabled={isSubmitting}>
-        Submit
+      <Button className="flex self-end" type="submit" disabled={isSubmitting}>
+        Move to payment
       </Button>
     </div>
   );
