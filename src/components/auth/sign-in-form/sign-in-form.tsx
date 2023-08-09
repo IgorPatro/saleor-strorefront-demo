@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
+import { useApolloClient } from "@apollo/client";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -14,6 +15,7 @@ const formSchema = z.object({
 
 export const SignInForm = () => {
   const { push } = useRouter();
+  const client = useApolloClient();
 
   const {
     register,
@@ -34,6 +36,8 @@ export const SignInForm = () => {
     });
 
     if (result?.ok) {
+      await client.resetStore();
+
       push({
         pathname: "/",
       });

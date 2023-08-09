@@ -1,13 +1,12 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "@apollo/client";
+import { useMutation, useApolloClient } from "@apollo/client";
 import { CHECKOUT_EMAIL_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-email-update";
+import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 import { CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-billing-address-update";
 import { CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-address-update";
 import { Button } from "@/components/ui/button";
-import { type ApolloQueryResult } from "@apollo/client";
-import { type CheckoutQuery } from "@/saleor/graphql";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { type CheckoutFormInterface } from "../types";
@@ -15,23 +14,24 @@ import { type CheckoutFormInterface } from "../types";
 interface CheckoutCustomerProps {
   checkoutId: string;
   onNextStep: () => void;
-  refetchCheckout: () => Promise<ApolloQueryResult<CheckoutQuery>>;
 }
 
 export const CheckoutCustomer = ({
   checkoutId,
   onNextStep,
-  refetchCheckout,
 }: CheckoutCustomerProps) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [showDifferentShippingAddress, setShowDifferentShippingAddress] =
     React.useState(false);
+  const client = useApolloClient();
+
   const {
     register,
-    formState: { errors, isValid, isSubmitting },
+    formState: { errors, isValid },
     getValues,
     trigger,
   } = useFormContext<CheckoutFormInterface>();
+
   const [updateEmail] = useMutation(CHECKOUT_EMAIL_UPDATE_MUTATION);
   const [updateBillingAddress] = useMutation(
     CHECKOUT_BILLING_ADDRESS_UPDATE_MUTATION
@@ -88,7 +88,9 @@ export const CheckoutCustomer = ({
       },
     });
 
-    await refetchCheckout();
+    await client.refetchQueries({
+      include: [CHECKOUT_QUERY],
+    });
 
     setIsLoading(false);
 
