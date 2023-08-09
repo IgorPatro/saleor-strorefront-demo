@@ -21,13 +21,11 @@ import { CheckoutFormSchema, type CheckoutFormInterface } from "./types";
 interface CheckoutDataFormProps {
   checkoutId: string;
   checkoutData: CheckoutQuery;
-  refetchCheckout: () => Promise<ApolloQueryResult<CheckoutQuery>>;
 }
 
 export const CheckoutForm = ({
   checkoutId,
   checkoutData,
-  refetchCheckout,
 }: CheckoutDataFormProps) => {
   const [step, setStep] = React.useState<"data" | "shipping" | "payment">(
     "data"
@@ -55,11 +53,6 @@ export const CheckoutForm = ({
   });
 
   const { handleSubmit } = form;
-
-  const parcelLockerShippingMethodId =
-    checkoutData.checkout?.shippingMethods.find(
-      (method) => method.metafields.isParcelLocker
-    )?.id ?? null;
 
   const onSubmit = async (values: CheckoutFormInterface) => {
     await updateShippingMethod({
@@ -91,7 +84,6 @@ export const CheckoutForm = ({
           <CheckoutCustomer
             onNextStep={() => setStep("shipping")}
             checkoutId={checkoutId}
-            refetchCheckout={refetchCheckout}
           />
         )}
         {step === "shipping" && (
