@@ -12,6 +12,7 @@ import { InpostGeowidget } from "react-inpost-geowidget";
 import { CheckoutQuery } from "@/saleor/graphql";
 import { type InpostGeowidgetPoint } from "@/types/inpost-geowidget";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 interface CheckoutShippingProps {
   checkoutData: CheckoutQuery;
@@ -31,13 +32,23 @@ export const CheckoutShipping = ({ checkoutData }: CheckoutShippingProps) => {
       (method) => method.metafields.isParcelLocker
     );
 
+  React.useEffect(() => {
+    if (parcelLockerShippingMethod !== watchShippingMethodId) {
+      setValue("parcelLockerName", null);
+      setValue("parcelLockerCity", null);
+      setValue("parcelLockerStreet", null);
+      setValue("parcelLockerPostalCode", null);
+    }
+  }, [parcelLockerShippingMethod, setValue, watchShippingMethodId]);
+
   const onInPostPointSelect = (point: InpostGeowidgetPoint) => {
-    setValue("shippingAddressCity", point.address_details.city);
+    setValue("parcelLockerName", point.name);
+    setValue("parcelLockerCity", point.address_details.city);
     setValue(
-      "shippingAddressStreet",
+      "parcelLockerStreet",
       `${point.address_details.street} ${point.address_details.building_number}`
     );
-    setValue("shippingPostalCode", point.address_details.post_code);
+    setValue("parcelLockerPostalCode", point.address_details.post_code);
   };
 
   return (
@@ -56,23 +67,29 @@ export const CheckoutShipping = ({ checkoutData }: CheckoutShippingProps) => {
               >
                 {checkoutData.checkout?.shippingMethods?.map((method) => (
                   <FormItem key={method.id} className="flex flex-col">
-                    <div className="flex gap-2 items-center">
-                      <FormControl>
-                        <RadioGroupItem value={method.id} />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        {method.name}
-                      </FormLabel>
-                    </div>
-                    {watchShippingMethodId === method.id &&
-                    watchShippingMethodId === parcelLockerShippingMethod?.id ? (
-                      <div className="h-[32rem]">
-                        <InpostGeowidget
-                          token="eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzQlpXVzFNZzVlQnpDYU1XU3JvTlBjRWFveFpXcW9Ua2FuZVB3X291LWxvIn0.eyJleHAiOjIwMDY2MjQ2MzQsImlhdCI6MTY5MTI2NDYzNCwianRpIjoiYWQyOWU5ODAtMDVkNi00YjgzLWEyYTItM2RiNGFjZDM4NjhiIiwiaXNzIjoiaHR0cHM6Ly9sb2dpbi5pbnBvc3QucGwvYXV0aC9yZWFsbXMvZXh0ZXJuYWwiLCJzdWIiOiJmOjEyNDc1MDUxLTFjMDMtNGU1OS1iYTBjLTJiNDU2OTVlZjUzNTpjWmJSTWpUbndDaDZQMkNXN0oyZEFRIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2hpcHgiLCJzZXNzaW9uX3N0YXRlIjoiNjVmNWU5ZjYtMTExZS00MGFiLTgwMzktZDdhZGUzZjI0Mjk3Iiwic2NvcGUiOiJvcGVuaWQgYXBpOmFwaXBvaW50cyIsInNpZCI6IjY1ZjVlOWY2LTExMWUtNDBhYi04MDM5LWQ3YWRlM2YyNDI5NyIsImFsbG93ZWRfcmVmZXJyZXJzIjoiNGIwMS0yYTAyLWEzMTUtZTU0Mi1kOTgwLTQ4OWUtNDVmZC1kMGFlLTJkMzYubmdyb2stZnJlZS5hcHAiLCJ1dWlkIjoiNjQ3NmU4MTEtNTQ3Ni00ZWYxLWEyMWYtZDAyMDY3ZDRiM2MyIn0.C4uUIPxgTPgw5ldOe0LsD7qLkquKVo1Out8kAovcQSm0kOjzWULteDTubv0WkfyCCq6J1wMCwDOieuA3zwSgLFrBY6azz1N5UHf8LctERsH3B42X-kVbGcSfqFK14HB2wggZFlU0UvQX-eIiNnAOMQNV6Qx0AEmyT2IeLPYS4eREvVJL8LhFL7gpyJGsUJ0mvp57TSkTkNXVLtx_m9-AHbVeOxfp0hQIK4SUzn_4b6r3n59JV4_pOe9UztZXavqi0nIn6RJgwa-g3f-zb7S6ji-_aHLXTji2BTrc7V-KCEnzZeCzNGs4PK3PdeYficmp_Cstgdwp7Ex9DlZWWAzapg"
-                          onPoint={onInPostPointSelect}
-                        />
-                      </div>
-                    ) : null}
+                    <FormLabel className="font-normal">
+                      <Card className="p-4">
+                        <div className="flex gap-2 items-center">
+                          <FormControl>
+                            <RadioGroupItem value={method.id} />
+                          </FormControl>
+                          <div className="w-full flex justify-between items-center">
+                            <div>{method.name}</div>
+                            <div>{method.price.amount}PLN</div>
+                          </div>
+                        </div>
+                        {watchShippingMethodId === method.id &&
+                        watchShippingMethodId ===
+                          parcelLockerShippingMethod?.id ? (
+                          <div className="h-[32rem] mt-5">
+                            <InpostGeowidget
+                              token="eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzQlpXVzFNZzVlQnpDYU1XU3JvTlBjRWFveFpXcW9Ua2FuZVB3X291LWxvIn0.eyJleHAiOjIwMDY5NzA5ODAsImlhdCI6MTY5MTYxMDk4MCwianRpIjoiYzlkYzhhZWEtZDY1OC00NjlmLThhNWUtNWFhOTBiY2ZiNzljIiwiaXNzIjoiaHR0cHM6Ly9sb2dpbi5pbnBvc3QucGwvYXV0aC9yZWFsbXMvZXh0ZXJuYWwiLCJzdWIiOiJmOjEyNDc1MDUxLTFjMDMtNGU1OS1iYTBjLTJiNDU2OTVlZjUzNTpjWmJSTWpUbndDaDZQMkNXN0oyZEFRIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic2hpcHgiLCJzZXNzaW9uX3N0YXRlIjoiMjlhYjgwYmYtY2Y5MC00NGUxLWJiOGEtMTEyZTQzY2I5YTA0Iiwic2NvcGUiOiJvcGVuaWQgYXBpOmFwaXBvaW50cyIsInNpZCI6IjI5YWI4MGJmLWNmOTAtNDRlMS1iYjhhLTExMmU0M2NiOWEwNCIsImFsbG93ZWRfcmVmZXJyZXJzIjoiMjVmYS0yYTAyLWEzMTUtZTU0Mi1kOTgwLTZkMWMtYWM3Yi00ZjBmLWU0MjUubmdyb2stZnJlZS5hcHAiLCJ1dWlkIjoiNjQ3NmU4MTEtNTQ3Ni00ZWYxLWEyMWYtZDAyMDY3ZDRiM2MyIn0.WGcDyxk1WY55bIesukbPOUsKSBK5z0nIfQFvUaFlZhWDWnxe9fCyhCILb-kaLqIRSopKUxw_FpB8ADTSVftdN-hexU5bERQubeHv_NktUFDpCbkVnTrs3dnkDJ34Vwp6mBBfnsHypRHftBTorGFVXnNlz0oHk_s-mm-a1H7JTyRTWgF5DN532H6uH_cO11qHKd-amPqcOra5Yrcz9HVBhOXOpT3I92kz6ejlt9BgGuwKEicAPluIvz5tiXsURkUaZrjSvzw6LNwM8KSEbeZF4RRYS3iZa951kJTU7k3fR67vDCMSvPkohRsZWJjWHyPTD2o1-kjuGSvs3Ek3UTgqXA"
+                              onPoint={onInPostPointSelect}
+                            />
+                          </div>
+                        ) : null}
+                      </Card>
+                    </FormLabel>
                   </FormItem>
                 ))}
               </RadioGroup>

@@ -13,16 +13,16 @@ import { type CheckoutFormInterface } from "../types";
 
 interface CheckoutCustomerProps {
   checkoutId: string;
+  disabled?: boolean;
   onNextStep: () => void;
 }
 
 export const CheckoutCustomer = ({
   checkoutId,
+  disabled,
   onNextStep,
 }: CheckoutCustomerProps) => {
   const [isLoading, setIsLoading] = React.useState(false);
-  const [showDifferentShippingAddress, setShowDifferentShippingAddress] =
-    React.useState(false);
   const client = useApolloClient();
 
   const {
@@ -50,7 +50,7 @@ export const CheckoutCustomer = ({
     await updateEmail({
       variables: {
         checkoutId,
-        email: values.email,
+        email: values.billingEmail,
       },
     });
 
@@ -63,28 +63,12 @@ export const CheckoutCustomer = ({
       },
     });
 
-    // const shippingAddress = {
-    //   city:
-    //     values.shippingMethodId === parcelLockerShippingMethodId
-    //       ? values.shippingAddressCity
-    //       : values.billingAddressCity,
-    //   streetAddress1:
-    //     values.shippingMethodId === parcelLockerShippingMethodId
-    //       ? values.shippingAddressStreet
-    //       : values.billingAddressStreet,
-    //   postalCode:
-    //     values.shippingMethodId === parcelLockerShippingMethodId
-    //       ? values.shippingPostalCode
-    //       : values.billingPostalCode,
-    // };
-
     await updateShippingAddress({
       variables: {
         checkoutId,
-        // ...shippingAddress,
-        city: values.billingAddressCity,
-        streetAddress1: values.billingAddressStreet,
-        postalCode: values.billingPostalCode,
+        city: values.shippingAddressCity,
+        streetAddress1: values.shippingAddressStreet,
+        postalCode: values.shippingPostalCode,
       },
     });
 
@@ -104,26 +88,30 @@ export const CheckoutCustomer = ({
       <div className="flex gap-3">
         <Input
           placeholder="First name"
-          {...register("firstName")}
-          className={errors?.firstName && "border-red-500"}
+          {...register("billingFirstName")}
+          className={errors?.billingFirstName && "border-red-500"}
+          disabled={disabled}
         />
         <Input
           placeholder="Last name"
-          {...register("lastName")}
-          className={errors?.lastName && "border-red-500"}
+          {...register("billingLastName")}
+          className={errors?.billingLastName && "border-red-500"}
+          disabled={disabled}
         />
       </div>
 
       <div className="flex gap-3">
         <Input
           placeholder="Email"
-          {...register("email")}
-          className={errors?.email && "border-red-500"}
+          {...register("billingEmail")}
+          className={errors?.billingEmail && "border-red-500"}
+          disabled={disabled}
         />
         <Input
           placeholder="Phone"
-          {...register("phone")}
-          className={errors?.phone && "border-red-500"}
+          {...register("billingPhone")}
+          className={errors?.billingPhone && "border-red-500"}
+          disabled={disabled}
         />
       </div>
 
@@ -132,62 +120,74 @@ export const CheckoutCustomer = ({
           placeholder="Address"
           {...register("billingAddressStreet")}
           className={errors?.billingAddressStreet && "border-red-500"}
+          disabled={disabled}
         />
         <Input
           placeholder="Postal code"
           {...register("billingPostalCode")}
           className={errors?.billingPostalCode && "border-red-500"}
+          disabled={disabled}
         />
         <Input
           placeholder="City"
           {...register("billingAddressCity")}
           className={errors?.billingAddressCity && "border-red-500"}
+          disabled={disabled}
         />
       </div>
 
-      <div className="flex gap-2 items-center">
-        <Checkbox
-          id="differentShippingAddress"
-          checked={showDifferentShippingAddress}
-          onCheckedChange={(checked) => {
-            setShowDifferentShippingAddress(checked as boolean);
-          }}
+      <h1 className="text-2xl font-semibold">Shipping details</h1>
+
+      <div className="flex gap-3">
+        <Input
+          placeholder="First name"
+          {...register("shippingFirstName")}
+          className={errors?.shippingFirstName && "border-red-500"}
+          disabled={disabled}
         />
-        <div className="grid gap-1.5 leading-none">
-          <label
-            htmlFor="differentShippingAddress"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Different shipping address
-          </label>
-        </div>
+        <Input
+          placeholder="Last name"
+          {...register("shippingLastName")}
+          className={errors?.shippingLastName && "border-red-500"}
+          disabled={disabled}
+        />
       </div>
 
-      {showDifferentShippingAddress ? (
-        <div className="flex gap-3">
-          <Input
-            placeholder="Address"
-            {...register("shippingAddressStreet")}
-            className={errors?.shippingAddressStreet && "border-red-500"}
-          />
-          <Input
-            placeholder="Postal code"
-            {...register("shippingPostalCode")}
-            className={errors?.shippingPostalCode && "border-red-500"}
-          />
-          <Input
-            placeholder="City"
-            {...register("shippingAddressCity")}
-            className={errors?.shippingAddressCity && "border-red-500"}
-          />
-        </div>
-      ) : null}
+      <div className="flex gap-3">
+        <Input
+          placeholder="Phone"
+          {...register("shippingPhone")}
+          className={errors?.shippingPhone && "border-red-500"}
+          disabled={disabled}
+        />
+      </div>
+
+      <div className="flex gap-3">
+        <Input
+          placeholder="Address"
+          {...register("shippingAddressStreet")}
+          className={errors?.shippingAddressStreet && "border-red-500"}
+          disabled={disabled}
+        />
+        <Input
+          placeholder="Postal code"
+          {...register("shippingPostalCode")}
+          className={errors?.shippingPostalCode && "border-red-500"}
+          disabled={disabled}
+        />
+        <Input
+          placeholder="City"
+          {...register("shippingAddressCity")}
+          className={errors?.shippingAddressCity && "border-red-500"}
+          disabled={disabled}
+        />
+      </div>
 
       <Button
         className="flex self-end"
         type="button"
         onClick={() => onMoveToShipping()}
-        disabled={isLoading}
+        disabled={isLoading || disabled}
       >
         Continue to shipping
       </Button>

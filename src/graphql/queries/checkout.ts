@@ -42,6 +42,9 @@ export const CHECKOUT_QUERY = gql(`
         name
         id
         metafields
+        price {
+          amount
+        }
       }
     }
   }
