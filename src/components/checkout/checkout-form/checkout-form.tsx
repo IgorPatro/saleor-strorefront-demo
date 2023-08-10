@@ -13,6 +13,7 @@ import { type CheckoutLine } from "@/saleor/graphql";
 
 import { CheckoutCustomer } from "./checkout-customer";
 import { CheckoutShipping } from "./checkout-shipping";
+import { CheckoutSummary } from "./checkout-summary";
 
 interface CheckoutDataFormProps {
   checkoutId: string;
@@ -29,15 +30,11 @@ export const CheckoutForm = ({ checkoutId }: CheckoutDataFormProps) => {
 
   return (
     <>
-      <div className="flex flex-col gap-8">
+      <div className="w-full flex flex-col gap-8">
         <CheckoutCustomer checkoutId={checkoutId} checkoutData={checkoutData} />
-        <CheckoutShipping checkoutId={checkoutId} checkoutData={checkoutData} />
       </div>
-      <div className="w-full flex flex-col gap-3">
-        {checkoutData.checkout?.lines.map((line) => (
-          <CheckoutProductItem key={line.id} line={line as CheckoutLine} />
-        ))}
-        <div>Total: {checkoutData.checkout?.totalPrice?.gross.amount}PLN</div>
+      <div className="w-full flex flex-col gap-8">
+        <CheckoutShipping checkoutId={checkoutId} checkoutData={checkoutData} />
       </div>
     </>
   );
