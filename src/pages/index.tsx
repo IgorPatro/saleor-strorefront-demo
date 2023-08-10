@@ -35,15 +35,14 @@ interface HomeProps {
 }
 
 export default function Home({ products }: HomeProps) {
-  const [cartId, setCartId] = useLocalStorage<string>("cartId");
+  const [localStorageCartId, setLocalStorageCartId] =
+    useLocalStorage<string>("cartId");
   const [createCheckout] = useMutation(CHECKOUT_CREATE_MUTATION);
   const [addLinesToCheckout] = useMutation(CHECKOUT_LINES_ADD_MUTATION);
   const { data: me } = useQuery(ME_QUERY);
   const { push } = useRouter();
   const { data: session } = useSession();
   const client = useApolloClient();
-
-  console.log(me);
 
   const onAddToCart = async (variantId: string) => {
     if (me?.me?.checkout?.id) {
@@ -59,17 +58,17 @@ export default function Home({ products }: HomeProps) {
       return push(`/cart/${me?.me?.checkout?.id}`);
     }
 
-    if (cartId) {
+    if (localStorageCartId) {
       await addLinesToCheckout({
         variables: {
           variantId,
-          checkoutId: cartId,
+          checkoutId: localStorageCartId,
         },
       });
 
       await client.clearStore();
 
-      return push(`/cart/${cartId}`);
+      return push(`/cart/${localStorageCartId}`);
     }
 
     const { data } = await createCheckout({
@@ -80,7 +79,7 @@ export default function Home({ products }: HomeProps) {
 
     // Add to local storage only if user is not signed in
     if (!session) {
-      setCartId(data?.checkoutCreate?.checkout?.id);
+      setLocalStorageCartId(data?.checkoutCreate?.checkout?.id);
     }
 
     await client.clearStore();

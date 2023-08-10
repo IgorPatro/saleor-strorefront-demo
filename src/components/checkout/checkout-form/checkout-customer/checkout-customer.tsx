@@ -40,7 +40,7 @@ export const CheckoutCustomer = ({
     CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION
   );
 
-  const onMoveToShipping = async () => {
+  const onSave = async () => {
     trigger();
     if (!isValid) return;
     const values = getValues();
@@ -186,10 +186,10 @@ export const CheckoutCustomer = ({
       <Button
         className="flex self-end"
         type="button"
-        onClick={() => onMoveToShipping()}
+        onClick={() => onSave()}
         disabled={isLoading || disabled}
       >
-        Continue to shipping
+        Save
       </Button>
     </div>
   );
