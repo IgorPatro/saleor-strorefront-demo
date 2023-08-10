@@ -2,15 +2,21 @@ import { gql } from "@/saleor/gql";
 
 export const CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION = gql(`
   mutation CheckoutShippingAddressUpdate(
+    $checkoutId: ID!
+    $firstName: String!
+    $lastName: String!
+    $phone: String!
     $city: String!
     $streetAddress1: String!
     $postalCode: String!
-    $checkoutId: ID!
   ) {
     checkoutShippingAddressUpdate(
       shippingAddress: {
-        city: $city
         country: PL
+        firstName: $firstName
+        lastName: $lastName
+        phone: $phone
+        city: $city
         streetAddress1: $streetAddress1
         postalCode: $postalCode
       }
