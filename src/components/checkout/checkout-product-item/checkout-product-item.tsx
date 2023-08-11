@@ -13,9 +13,9 @@ interface ProductCardProps {
 
 export const CheckoutProductItem = ({ line }: ProductCardProps) => {
   return (
-    <Card className="p-0">
-      <CardContent className="flex gap-2 items-center justify-between p-4">
-        <div className="flex items-center gap-2">
+    <>
+      <CardContent className="p-0 w-full flex gap-2 items-center justify-between">
+        <div className="flex items-center justify-start gap-2">
           <div className="relative w-32 aspect-square rounded-lg overflow-hidden">
             <Image
               src={getDefaultProductImage(line.variant.product.media)}
@@ -32,6 +32,6 @@ export const CheckoutProductItem = ({ line }: ProductCardProps) => {
           </p>
         </div>
       </CardContent>
-    </Card>
+    </>
   );
 };

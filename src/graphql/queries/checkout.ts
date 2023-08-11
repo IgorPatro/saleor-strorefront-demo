@@ -12,6 +12,17 @@ export const CHECKOUT_QUERY = gql(`
         }
       }
       billingAddress {
+        phone
+        firstName
+        lastName
+        city
+        streetAddress1
+        postalCode
+      }
+      shippingAddress {
+        phone
+        firstName
+        lastName
         city
         streetAddress1
         postalCode
@@ -42,6 +53,9 @@ export const CHECKOUT_QUERY = gql(`
         name
         id
         metafields
+        price {
+          amount
+        }
       }
     }
   }

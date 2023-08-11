@@ -59,6 +59,22 @@ export const ME_QUERY = gql(`
           }
         }
       }
+      defaultBillingAddress {
+        city
+        firstName
+        lastName
+        phone
+        streetAddress1
+        postalCode
+      }
+      defaultShippingAddress {
+        city
+        firstName
+        lastName
+        phone
+        streetAddress1
+        postalCode
+      }
     }
   }
 `);
