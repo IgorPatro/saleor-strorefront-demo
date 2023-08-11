@@ -1,7 +1,7 @@
 import { gql } from "@/saleor/gql";
 
 export const PRODUCT_QUERY = gql(`
-  query Prodcut($slug: String!) {
+  query Product($slug: String!) {
     product(slug: $slug) {
       name
       slug

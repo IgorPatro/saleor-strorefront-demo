@@ -3,12 +3,14 @@ import { serverClient } from "@/utils/apollo-client";
 import { PRODUCT_QUERY } from "@/graphql/queries/product";
 import { GetServerSideProps } from "next";
 
-import { type ProdcutQuery } from "@/saleor/graphql";
+import { type ProductQuery } from "@/saleor/graphql";
+import { renderMarkdown } from "@/utils/render-markdown";
+import { ProductMedia } from "@/components/product/product-media";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const productSlug = ctx.query["productSlug"] as string;
 
-  const { data } = await serverClient.query({
+  const { data: productData } = await serverClient.query({
     query: PRODUCT_QUERY,
     variables: {
       slug: productSlug,
@@ -16,29 +18,23 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   });
 
   return {
-    props: { productSlug, data },
+    props: { productSlug, productData },
   };
 };
 
 interface ProductPageProps {
   productSlug: string;
-  productData: ProdcutQuery;
+  productData: ProductQuery;
 }
 
 const ProductPage = ({ productSlug, productData }: ProductPageProps) => {
-  console.log(productData);
-  const blocks = JSON.parse(productData.product?.description).blocks.map(
-    (block: any) => block
-  );
-
-  console.log(blocks);
-
   return (
-    <div>
-      <h1>{productData.product?.name}</h1>
-      <br />
-      {/* {blocks.map((block) => renderBlock(block))} */}
-      {productSlug}
+    <div className="flex gap-10">
+      <ProductMedia images={productData.product?.media ?? []} />
+      <div className="w-full">
+        <h1 className="text-3xl font-bold">{productData.product?.name}</h1>
+        {renderMarkdown(productData.product?.description)}
+      </div>
     </div>
   );
 };
