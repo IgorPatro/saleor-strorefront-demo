@@ -6,6 +6,11 @@ import { GetServerSideProps } from "next";
 import { type ProductQuery } from "@/saleor/graphql";
 import { renderMarkdown } from "@/utils/render-markdown";
 import { ProductMedia } from "@/components/product/product-media";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+
+import { useAddToCart } from "@/hooks/use-add-to-cart";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const productSlug = ctx.query["productSlug"] as string;
@@ -28,12 +33,42 @@ interface ProductPageProps {
 }
 
 const ProductPage = ({ productSlug, productData }: ProductPageProps) => {
+  const [selectedVariantId, setSelectedVariantId] = React.useState<string>(
+    productData.product?.variants?.[0].id ??
+      productData.product?.defaultVariant?.id ??
+      ""
+  );
+
+  const { handleAddToCart } = useAddToCart();
+
   return (
     <div className="flex gap-10">
       <ProductMedia images={productData.product?.media ?? []} />
-      <div className="w-full">
+      <div className="w-full flex flex-col gap-3">
         <h1 className="text-3xl font-bold">{productData.product?.name}</h1>
-        {renderMarkdown(productData.product?.description)}
+        <RadioGroup
+          value={selectedVariantId}
+          onValueChange={(newVariantId) => setSelectedVariantId(newVariantId)}
+        >
+          {productData.product?.variants?.map((variant) => (
+            <div
+              key={variant.id}
+              className="flex items-center space-x-2 cursor-pointer"
+            >
+              <RadioGroupItem value={variant.id} id={variant.id} />
+              <Label className="cursor-pointer" htmlFor={variant.id}>
+                {variant.name}
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
+        <div>{renderMarkdown(productData.product?.description)}</div>
+        <Button
+          className="self-start"
+          onClick={() => handleAddToCart(selectedVariantId)}
+        >
+          Add to cart
+        </Button>
       </div>
     </div>
   );

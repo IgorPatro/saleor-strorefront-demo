@@ -55,10 +55,6 @@ const generatePayment: NextApiHandler = async (req, res) => {
     timeLimit: 15,
   });
 
-  console.log(
-    `${process.env.APP_DOMAIN}/api/confirm-payment/${order?.orderCreateFromCheckout?.order?.id}/`
-  );
-
   return res.status(200).json(p24Transaction);
 };
 

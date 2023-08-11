@@ -30,7 +30,9 @@ export const CartProductItem = ({
               style={{ objectFit: "cover" }}
             />
           </div>
-          <p>{line.variant.product.name}</p>
+          <p>
+            {line.variant.product.name}, {line.variant.name}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Input

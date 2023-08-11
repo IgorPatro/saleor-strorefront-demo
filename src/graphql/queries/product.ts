@@ -10,6 +10,25 @@ export const PRODUCT_QUERY = gql(`
       media {
         url(format: ORIGINAL)
       }
+      variants {
+        id
+        name
+        stocks {
+          quantity
+        }
+      }
+      category {
+        id
+        name
+      }
+      defaultVariant {
+        id
+        name
+      }
+      productType {
+        id
+        name
+      }
     }
   }
 `);
