@@ -23,22 +23,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 import { useLocalStorage } from "@/utils/use-local-storage";
 
 export const Navbar = () => {
   const { push } = useRouter();
-  const [cartId, setCartId] = useLocalStorage<string>("cartId");
+  const [localStorageCartId] = useLocalStorage<string>("cartId");
   const { data: session } = useSession();
   const { data: me } = useQuery(ME_QUERY);
 
-  const onRedirectToCart = () => {
-    const currentCartId = me?.me?.checkout?.id ?? cartId;
+  const onRedirectToCart = async () => {
+    const currentCartId = me?.me?.checkout?.id ?? localStorageCartId;
 
     if (currentCartId) {
       return push(`/cart/${currentCartId}`);
     }
+
+    return push(`/cart/empty`);
   };
 
   return (

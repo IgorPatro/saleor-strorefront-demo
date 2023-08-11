@@ -24,9 +24,9 @@ interface CheckoutPageProps {
   cartId: string;
 }
 
-const CheckoutPage = ({ cartId }: CheckoutPageProps) => {
+const CartPage = ({ cartId }: CheckoutPageProps) => {
   const { push } = useRouter();
-  const [localStorageCartId, setLocalStorageCartId, removeLocalStorageCartId] =
+  const [localStorageCartId, , removeLocalStorageCartId] =
     useLocalStorage<string>("cartId");
   const [updateLines, { loading: isUpdateMutationLoading }] = useMutation(
     CHECKOUT_LINES_UPDATE_MUTATION
@@ -88,9 +88,7 @@ const CheckoutPage = ({ cartId }: CheckoutPageProps) => {
     removeLocalStorageCartId,
   ]);
 
-  if (!data) return null;
-
-  if (data.checkout?.lines.length === 0) {
+  if (!data || !data?.checkout || data?.checkout?.lines.length === 0) {
     return (
       <div>
         <h1 className="text-2xl font-bold">Your cart is empty</h1>
@@ -127,4 +125,4 @@ const CheckoutPage = ({ cartId }: CheckoutPageProps) => {
   );
 };
 
-export default CheckoutPage;
+export default CartPage;

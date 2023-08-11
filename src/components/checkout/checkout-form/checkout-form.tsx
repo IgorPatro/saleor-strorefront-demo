@@ -1,16 +1,10 @@
 import React from "react";
-import { useRouter } from "next/router";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import axios from "axios";
 import { Form } from "@/components/ui/form";
-import { CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-method-update";
 import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
-import { useMutation, useQuery } from "@apollo/client";
-import { ME_QUERY } from "@/graphql/queries/me";
-import { CheckoutProductItem } from "@/components/checkout/checkout-product-item";
-import { type CheckoutLine } from "@/saleor/graphql";
+import { useQuery } from "@apollo/client";
+import { Card } from "@/components/ui/card";
 
+import { useCheckoutFormShipping } from "./checkout-shipping/hooks";
 import { CheckoutCustomer } from "./checkout-customer";
 import { CheckoutShipping } from "./checkout-shipping";
 import { CheckoutSummary } from "./checkout-summary";
@@ -26,6 +20,18 @@ export const CheckoutForm = ({ checkoutId }: CheckoutDataFormProps) => {
     },
   });
 
+  const parcelLockerShippingMethodId =
+    checkoutData?.checkout?.shippingMethods.find(
+      (method) => method.metafields.isParcelLocker
+    )?.id;
+
+  const { form, onSubmit } = useCheckoutFormShipping(
+    checkoutId,
+    parcelLockerShippingMethodId
+  );
+
+  const { handleSubmit } = form;
+
   if (!checkoutData?.checkout) return null;
 
   return (
@@ -33,9 +39,20 @@ export const CheckoutForm = ({ checkoutId }: CheckoutDataFormProps) => {
       <div className="w-full flex flex-col gap-8">
         <CheckoutCustomer checkoutId={checkoutId} checkoutData={checkoutData} />
       </div>
-      <div className="w-full flex flex-col gap-8">
-        <CheckoutShipping checkoutId={checkoutId} checkoutData={checkoutData} />
-      </div>
+      <Card className="w-full flex flex-col gap-8 p-4">
+        <CheckoutSummary checkoutData={checkoutData} />
+        <Form {...form}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="w-full space-y-4 max-w-2xl"
+          >
+            <CheckoutShipping
+              checkoutData={checkoutData}
+              parcelLockerShippingMethodId={parcelLockerShippingMethodId}
+            />
+          </form>
+        </Form>
+      </Card>
     </>
   );
 };

@@ -12,7 +12,10 @@ import {
   CheckoutFormShippingSchema,
 } from "./types";
 
-export const useCheckoutFormShipping = (checkoutId: string) => {
+export const useCheckoutFormShipping = (
+  checkoutId: string,
+  parcelLockerShippingMethodId?: string
+) => {
   const { push } = useRouter();
   const [updateShippingMethod] = useMutation(
     CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION
@@ -45,7 +48,8 @@ export const useCheckoutFormShipping = (checkoutId: string) => {
       values.parcelLockerName &&
       values.parcelLockerCity &&
       values.parcelLockerStreet &&
-      values.parcelLockerPostalCode
+      values.parcelLockerPostalCode &&
+      parcelLockerShippingMethodId === values.shippingMethodId
     ) {
       await updateShippingAddress({
         variables: {
