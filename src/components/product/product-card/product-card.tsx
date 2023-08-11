@@ -16,7 +16,7 @@ import { getDefaultProductImage } from "@/utils/get-default-product-image";
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart: (variantId: string) => void;
+  onAddToCart?: (variantId: string) => void;
 }
 
 export const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
@@ -41,7 +41,7 @@ export const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
           <Button
             onClick={(e) => {
               e.preventDefault();
-              onAddToCart(product.defaultVariant?.id ?? "");
+              onAddToCart && onAddToCart(product.defaultVariant?.id ?? "");
             }}
           >
             Cart
