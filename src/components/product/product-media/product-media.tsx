@@ -19,6 +19,7 @@ export const ProductMedia = ({ images }: ProductMediaProps) => {
             style={{ objectFit: "cover" }}
             width={300}
             height={300}
+            className="shadow-xl"
           />
         );
       }
