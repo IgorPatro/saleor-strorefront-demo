@@ -16,6 +16,7 @@ export const PRODUCT_QUERY = gql(`
         stocks {
           quantity
         }
+        quantityAvailable
       }
       category {
         id

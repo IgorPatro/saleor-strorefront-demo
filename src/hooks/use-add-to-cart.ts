@@ -57,6 +57,8 @@ export const useAddToCart = () => {
 
     await client.clearStore();
 
+    console.log(data);
+
     return push(`/cart/${data?.checkoutCreate?.checkout?.id}`);
   };
 
