@@ -8,6 +8,7 @@ import { useCheckoutFormShipping } from "./checkout-shipping/hooks";
 import { CheckoutCustomer } from "./checkout-customer";
 import { CheckoutShipping } from "./checkout-shipping";
 import { CheckoutSummary } from "./checkout-summary";
+import { CheckoutPromoCodes } from "./checkout-promo-codes";
 
 interface CheckoutDataFormProps {
   checkoutId: string;
@@ -49,6 +50,10 @@ export const CheckoutForm = ({ checkoutId }: CheckoutDataFormProps) => {
             <CheckoutShipping
               checkoutData={checkoutData}
               parcelLockerShippingMethodId={parcelLockerShippingMethodId}
+            />
+            <CheckoutPromoCodes
+              checkoutId={checkoutId}
+              checkoutData={checkoutData}
             />
           </form>
         </Form>

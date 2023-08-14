@@ -11,6 +11,10 @@ export const CHECKOUT_QUERY = gql(`
           currency
         }
       }
+      discount {
+        amount
+      }
+      voucherCode
       billingAddress {
         phone
         firstName
