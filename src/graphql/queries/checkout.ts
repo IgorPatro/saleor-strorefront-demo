@@ -22,6 +22,7 @@ export const CHECKOUT_QUERY = gql(`
         city
         streetAddress1
         postalCode
+        companyName
       }
       shippingAddress {
         phone

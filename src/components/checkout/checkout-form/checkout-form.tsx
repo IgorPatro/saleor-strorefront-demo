@@ -4,6 +4,7 @@ import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 import { useQuery } from "@apollo/client";
 import { Card } from "@/components/ui/card";
 
+import { useCheckoutForm } from "./hooks";
 import { useCheckoutFormShipping } from "./checkout-shipping/hooks";
 import { CheckoutCustomer } from "./checkout-customer";
 import { CheckoutShipping } from "./checkout-shipping";
@@ -26,38 +27,26 @@ export const CheckoutForm = ({ checkoutId }: CheckoutDataFormProps) => {
       (method) => method.metafields.isParcelLocker
     )?.id;
 
-  const { form, onSubmit } = useCheckoutFormShipping(
-    checkoutId,
-    parcelLockerShippingMethodId
-  );
-
-  const { handleSubmit } = form;
+  const { form, onSubmit } = useCheckoutForm(checkoutId, checkoutData);
 
   if (!checkoutData?.checkout) return null;
 
   return (
-    <>
+    <Form {...form}>
       <div className="w-full flex flex-col gap-8">
         <CheckoutCustomer checkoutId={checkoutId} checkoutData={checkoutData} />
+        <CheckoutShipping
+          checkoutData={checkoutData}
+          parcelLockerShippingMethodId={parcelLockerShippingMethodId}
+        />
       </div>
       <Card className="w-full flex flex-col gap-8 p-4">
         <CheckoutSummary checkoutData={checkoutData} />
-        <Form {...form}>
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="w-full space-y-4 max-w-2xl"
-          >
-            <CheckoutShipping
-              checkoutData={checkoutData}
-              parcelLockerShippingMethodId={parcelLockerShippingMethodId}
-            />
-            <CheckoutPromoCodes
-              checkoutId={checkoutId}
-              checkoutData={checkoutData}
-            />
-          </form>
-        </Form>
+        <CheckoutPromoCodes
+          checkoutId={checkoutId}
+          checkoutData={checkoutData}
+        />
       </Card>
-    </>
+    </Form>
   );
 };
