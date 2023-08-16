@@ -14,7 +14,10 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { useCheckoutFormCustomer } from "./hooks";
-import { CheckoutFormValues } from "../types";
+import {
+  type CheckoutFormValues,
+  CheckoutCustomerDataFormSchema,
+} from "../types";
 
 interface CheckoutCustomerProps {
   checkoutId: string;
@@ -38,9 +41,12 @@ export const CheckoutCustomer = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const values = getValues();
 
-    console.log(values);
+    try {
+      const values = CheckoutCustomerDataFormSchema.parse(getValues());
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
