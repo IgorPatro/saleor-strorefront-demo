@@ -8,8 +8,8 @@ import { CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/c
 import { useMutation } from "@apollo/client";
 
 import {
-  type CheckoutFormShippingInterface,
-  CheckoutFormShippingSchema,
+  type CheckoutShippingFormValues,
+  CheckoutShippingFormSchema,
 } from "./types";
 
 export const useCheckoutFormShipping = (
@@ -24,8 +24,8 @@ export const useCheckoutFormShipping = (
     CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION
   );
 
-  const form = useForm<CheckoutFormShippingInterface>({
-    resolver: zodResolver(CheckoutFormShippingSchema),
+  const form = useForm<CheckoutShippingFormValues>({
+    resolver: zodResolver(CheckoutShippingFormSchema),
     defaultValues: {
       parcelLockerName: null,
       parcelLockerCity: null,
@@ -36,7 +36,7 @@ export const useCheckoutFormShipping = (
     },
   });
 
-  const onSubmit = async (values: CheckoutFormShippingInterface) => {
+  const onSubmit = async (values: CheckoutShippingFormValues) => {
     await updateShippingMethod({
       variables: {
         checkoutId,

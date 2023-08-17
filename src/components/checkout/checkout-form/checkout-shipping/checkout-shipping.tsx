@@ -14,18 +14,19 @@ import { type InpostGeowidgetPoint } from "@/types/inpost-geowidget";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-import { type CheckoutFormShippingInterface } from "./types";
+import { type CheckoutShippingFormValues } from "./types";
 
 interface CheckoutShippingProps {
   checkoutData: CheckoutQuery;
   parcelLockerShippingMethodId?: string;
+  onSubmit: (data: CheckoutShippingFormValues) => void;
 }
 
 export const CheckoutShipping = ({
   checkoutData,
   parcelLockerShippingMethodId,
 }: CheckoutShippingProps) => {
-  const form = useFormContext<CheckoutFormShippingInterface>();
+  const form = useFormContext<CheckoutShippingFormValues>();
   const [showGeowidget, setShowGeowidget] = React.useState(true);
 
   const {

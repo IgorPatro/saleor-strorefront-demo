@@ -1,22 +1,43 @@
 import * as z from "zod";
 
-export const CheckoutFormCustomerSchema = z.object({
-  billingEmail: z.string().email(),
-  billingPhone: z.string().min(5),
-  billingFirstName: z.string().min(1),
-  billingLastName: z.string().min(1),
-  billingAddressCity: z.string().min(1),
-  billingAddressStreet: z.string().min(1),
-  billingPostalCode: z.string().min(1),
+export const CheckoutCustomerDataFormSchema = z
+  .object({
+    email: z.string().email(),
+    shippingPhone: z.string().min(5),
+    shippingFirstName: z.string().min(1),
+    shippingLastName: z.string().min(1),
+    shippingAddressCity: z.string().min(3),
+    shippingAddressStreet: z.string().min(3),
+    shippingPostalCode: z.string().min(3),
 
-  shippingPhone: z.string().min(5),
-  shippingFirstName: z.string().min(1),
-  shippingLastName: z.string().min(1),
-  shippingAddressCity: z.string().min(1),
-  shippingAddressStreet: z.string().min(1),
-  shippingPostalCode: z.string().min(1),
-});
+    note: z.string().optional(),
+    requireInvoice: z.boolean(),
 
-export type CheckoutFormCustomerInterface = z.infer<
-  typeof CheckoutFormCustomerSchema
+    billingCompany: z.string().optional(),
+    billingNip: z.string().optional(),
+    billingAddressCity: z.string().optional(),
+    billingAddressStreet: z.string().optional(),
+    billingPostalCode: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.requireInvoice) {
+        return (
+          data.billingCompany &&
+          data.billingNip &&
+          data.billingAddressCity &&
+          data.billingAddressStreet &&
+          data.billingPostalCode
+        );
+      }
+      return true;
+    },
+    {
+      message: "All billing fields are required when requireInvoice is true",
+      path: ["billing"],
+    }
+  );
+
+export type CheckoutCustomerDataFormValues = z.infer<
+  typeof CheckoutCustomerDataFormSchema
 >;

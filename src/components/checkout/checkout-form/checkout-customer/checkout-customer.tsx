@@ -1,56 +1,40 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { type CheckoutQuery } from "@/saleor/graphql";
 import { useFormContext } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
+import { FormField } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FieldErrors } from "react-hook-form";
 
-import { useCheckoutFormCustomer } from "./hooks";
-import {
-  type CheckoutFormValues,
-  CheckoutCustomerDataFormSchema,
-} from "../types";
+import { CheckoutCustomerDataFormValues } from "./types";
 
 interface CheckoutCustomerProps {
-  checkoutId: string;
-  checkoutData: CheckoutQuery;
+  onSubmit: (data: CheckoutCustomerDataFormValues) => void;
 }
 
-export const CheckoutCustomer = ({
-  checkoutId,
-  checkoutData,
-}: CheckoutCustomerProps) => {
-  const form = useFormContext<CheckoutFormValues>();
+export const CheckoutCustomer = ({ onSubmit }: CheckoutCustomerProps) => {
+  const form = useFormContext<CheckoutCustomerDataFormValues>();
 
   const {
     watch,
     register,
-    getValues,
-    formState: { errors, isSubmitting },
+    handleSubmit,
+    formState: { errors, isSubmitting, isValid },
   } = form;
 
   const requireInvoice = watch("requireInvoice");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  type CheckoutCustomerErrors = {
+    billing: FieldErrors;
+  } & typeof errors;
 
-    try {
-      const values = CheckoutCustomerDataFormSchema.parse(getValues());
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const billingValidationFailure = (errors as CheckoutCustomerErrors).billing;
 
   return (
-    <form onSubmit={handleSubmit} className="w-full space-y-4 max-w-2xl">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full space-y-4 max-w-2xl"
+    >
       <div className="flex flex-col gap-4 justify-end">
         <h1 className="text-2xl font-semibold">Customer data</h1>
 
@@ -130,7 +114,19 @@ export const CheckoutCustomer = ({
               <Input
                 placeholder="Company"
                 {...register("billingCompany")}
-                className={errors?.billingCompany && "border-red-500"}
+                className={
+                  (errors?.billingCompany || billingValidationFailure) &&
+                  "border-red-500"
+                }
+                disabled={isSubmitting}
+              />
+              <Input
+                placeholder="NIP"
+                {...register("billingNip")}
+                className={
+                  (errors?.billingNip || billingValidationFailure) &&
+                  "border-red-500"
+                }
                 disabled={isSubmitting}
               />
             </div>
@@ -138,20 +134,29 @@ export const CheckoutCustomer = ({
             <div className="flex gap-3">
               <Input
                 placeholder="Address"
-                {...register("shippingAddressStreet")}
-                className={errors?.shippingAddressStreet && "border-red-500"}
+                {...register("billingAddressStreet")}
+                className={
+                  (errors?.billingAddressStreet || billingValidationFailure) &&
+                  "border-red-500"
+                }
                 disabled={isSubmitting}
               />
               <Input
                 placeholder="Postal code"
-                {...register("shippingPostalCode")}
-                className={errors?.shippingPostalCode && "border-red-500"}
+                {...register("billingPostalCode")}
+                className={
+                  (errors?.billingPostalCode || billingValidationFailure) &&
+                  "border-red-500"
+                }
                 disabled={isSubmitting}
               />
               <Input
                 placeholder="City"
-                {...register("shippingAddressCity")}
-                className={errors?.shippingAddressCity && "border-red-500"}
+                {...register("billingAddressCity")}
+                className={
+                  (errors?.billingAddressCity || billingValidationFailure) &&
+                  "border-red-500"
+                }
                 disabled={isSubmitting}
               />
             </div>
@@ -159,7 +164,7 @@ export const CheckoutCustomer = ({
         ) : null}
 
         <Button className="flex self-end" type="submit" disabled={isSubmitting}>
-          Save
+          Save ({isValid.toString()})
         </Button>
       </div>
     </form>
