@@ -17,7 +17,11 @@ interface CheckoutPageProps {
 }
 
 const CheckoutPage = ({ checkoutId }: CheckoutPageProps) => {
-  const { data: checkoutData } = useQuery(CHECKOUT_QUERY, {
+  const {
+    data: checkoutData,
+    loading: isLoading,
+    refetch,
+  } = useQuery(CHECKOUT_QUERY, {
     variables: {
       checkoutId: checkoutId,
     },
@@ -27,7 +31,12 @@ const CheckoutPage = ({ checkoutId }: CheckoutPageProps) => {
 
   return (
     <div className="p-4 flex gap-10">
-      <CheckoutForm checkoutId={checkoutId} checkoutData={checkoutData} />
+      <CheckoutForm
+        checkoutId={checkoutId}
+        checkoutData={checkoutData}
+        isLoading={isLoading}
+        refetch={refetch}
+      />
     </div>
   );
 };

@@ -13,36 +13,46 @@ import { CheckoutPromoCodes } from "./checkout-promo-codes";
 interface CheckoutDataFormProps {
   checkoutId: string;
   checkoutData: CheckoutQuery;
+  isLoading?: boolean;
 }
 
 export const CheckoutForm = ({
   checkoutId,
   checkoutData,
+  isLoading,
 }: CheckoutDataFormProps) => {
+  const [editMode, setEditMode] = React.useState(false);
+
+  const toggleEditMode = () => setEditMode((prev) => !prev);
+
   const parcelLockerShippingMethodId =
     checkoutData?.checkout?.shippingMethods.find(
       (method) => method.metafields.isParcelLocker
     )?.id;
 
   const { form: customerDataForm, onSubmit: onCustomerDataFormSubmit } =
-    useCheckoutFormCustomer(checkoutId, checkoutData);
+    useCheckoutFormCustomer(checkoutId, checkoutData, toggleEditMode);
 
   const {
-    formState: { isValid: isCustomerDataFormValid },
+    formState: { isValid: isCustomerDataFormValid, errors: customerFormErrors },
   } = customerDataForm;
 
   const { form: shippingDataForm, onSubmit: onShippingFormSubmit } =
     useCheckoutFormShipping(checkoutId, parcelLockerShippingMethodId);
 
   const {
-    formState: { isValid: isShippingFormValid },
+    formState: { isValid: isShippingFormValid, errors: shippingFormErrors },
   } = shippingDataForm;
 
   return (
     <>
       <div className="w-full flex flex-col gap-8">
         <Form {...customerDataForm}>
-          <CheckoutCustomer onSubmit={onCustomerDataFormSubmit} />
+          <CheckoutCustomer
+            onSubmit={onCustomerDataFormSubmit}
+            editMode={editMode}
+            toggleEditMode={toggleEditMode}
+          />
         </Form>
         <Form {...shippingDataForm}>
           <CheckoutShipping
@@ -55,7 +65,12 @@ export const CheckoutForm = ({
       <Card className="w-full flex flex-col gap-8 p-4">
         <CheckoutSummary
           checkoutData={checkoutData}
-          isDisabled={!isCustomerDataFormValid || !isShippingFormValid}
+          isDisabled={
+            !isCustomerDataFormValid ||
+            !isShippingFormValid ||
+            isLoading ||
+            editMode
+          }
         />
         <CheckoutPromoCodes
           checkoutId={checkoutId}

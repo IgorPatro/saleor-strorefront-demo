@@ -42,14 +42,20 @@ export const CheckoutPromoCodes = ({
           {checkoutData?.checkout?.discount?.amount}PLN)
         </div>
       ) : (
-        <div>
+        <div className="flex gap-2">
           <Input
             type="text"
             placeholder="Promo code"
             value={promoCode}
             onChange={(e) => setPromoCode(e.target.value)}
           />
-          <Button onClick={handleAddPromoCode}>Add promo code</Button>
+          <Button
+            className="w-52"
+            disabled={!promoCode}
+            onClick={handleAddPromoCode}
+          >
+            Add promo code
+          </Button>
         </div>
       )}
     </div>

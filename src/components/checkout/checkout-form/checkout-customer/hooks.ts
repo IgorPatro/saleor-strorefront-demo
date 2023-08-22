@@ -17,7 +17,8 @@ import {
 
 export const useCheckoutFormCustomer = (
   checkoutId: string,
-  checkoutData: CheckoutQuery
+  checkoutData: CheckoutQuery,
+  onSubmitSuccess: () => void
 ) => {
   const client = useApolloClient();
   const { data } = useQuery(ME_QUERY);
@@ -143,6 +144,8 @@ export const useCheckoutFormCustomer = (
     await client.refetchQueries({
       include: [CHECKOUT_QUERY],
     });
+
+    return onSubmitSuccess();
   };
 
   return {

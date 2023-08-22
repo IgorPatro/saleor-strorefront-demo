@@ -5,14 +5,21 @@ import { useFormContext } from "react-hook-form";
 import { FormField } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FieldErrors } from "react-hook-form";
+import { twMerge } from "tailwind-merge";
 
 import { CheckoutCustomerDataFormValues } from "./types";
 
 interface CheckoutCustomerProps {
   onSubmit: (data: CheckoutCustomerDataFormValues) => void;
+  editMode: boolean;
+  toggleEditMode: () => void;
 }
 
-export const CheckoutCustomer = ({ onSubmit }: CheckoutCustomerProps) => {
+export const CheckoutCustomer = ({
+  onSubmit,
+  editMode,
+  toggleEditMode,
+}: CheckoutCustomerProps) => {
   const form = useFormContext<CheckoutCustomerDataFormValues>();
 
   const {
@@ -43,13 +50,13 @@ export const CheckoutCustomer = ({ onSubmit }: CheckoutCustomerProps) => {
             placeholder="First name"
             {...register("shippingFirstName")}
             className={errors?.shippingFirstName && "border-red-500"}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !editMode}
           />
           <Input
             placeholder="Last name"
             {...register("shippingLastName")}
             className={errors?.shippingLastName && "border-red-500"}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !editMode}
           />
         </div>
 
@@ -58,13 +65,13 @@ export const CheckoutCustomer = ({ onSubmit }: CheckoutCustomerProps) => {
             placeholder="Email"
             {...register("email")}
             className={errors?.email && "border-red-500"}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !editMode}
           />
           <Input
             placeholder="Phone"
             {...register("shippingPhone")}
             className={errors?.shippingPhone && "border-red-500"}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !editMode}
           />
         </div>
 
@@ -73,26 +80,29 @@ export const CheckoutCustomer = ({ onSubmit }: CheckoutCustomerProps) => {
             placeholder="Address"
             {...register("shippingAddressStreet")}
             className={errors?.shippingAddressStreet && "border-red-500"}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !editMode}
           />
           <Input
             placeholder="Postal code"
             {...register("shippingPostalCode")}
             className={errors?.shippingPostalCode && "border-red-500"}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !editMode}
           />
           <Input
             placeholder="City"
             {...register("shippingAddressCity")}
             className={errors?.shippingAddressCity && "border-red-500"}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !editMode}
           />
         </div>
 
         <div className="flex items-center space-x-2">
           <label
             htmlFor="requireInvoice"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className={twMerge(
+              "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-20",
+              !editMode && "opacity-50"
+            )}
           >
             Require invoice
           </label>
@@ -103,6 +113,7 @@ export const CheckoutCustomer = ({ onSubmit }: CheckoutCustomerProps) => {
               <Checkbox
                 checked={field.value}
                 onCheckedChange={field.onChange}
+                disabled={isSubmitting || !editMode}
               />
             )}
           />
@@ -118,7 +129,7 @@ export const CheckoutCustomer = ({ onSubmit }: CheckoutCustomerProps) => {
                   (errors?.billingCompany || billingValidationFailure) &&
                   "border-red-500"
                 }
-                disabled={isSubmitting}
+                disabled={isSubmitting || !editMode}
               />
               <Input
                 placeholder="NIP"
@@ -127,7 +138,7 @@ export const CheckoutCustomer = ({ onSubmit }: CheckoutCustomerProps) => {
                   (errors?.billingNip || billingValidationFailure) &&
                   "border-red-500"
                 }
-                disabled={isSubmitting}
+                disabled={isSubmitting || !editMode}
               />
             </div>
 
@@ -139,7 +150,7 @@ export const CheckoutCustomer = ({ onSubmit }: CheckoutCustomerProps) => {
                   (errors?.billingAddressStreet || billingValidationFailure) &&
                   "border-red-500"
                 }
-                disabled={isSubmitting}
+                disabled={isSubmitting || !editMode}
               />
               <Input
                 placeholder="Postal code"
@@ -148,7 +159,7 @@ export const CheckoutCustomer = ({ onSubmit }: CheckoutCustomerProps) => {
                   (errors?.billingPostalCode || billingValidationFailure) &&
                   "border-red-500"
                 }
-                disabled={isSubmitting}
+                disabled={isSubmitting || !editMode}
               />
               <Input
                 placeholder="City"
@@ -157,15 +168,36 @@ export const CheckoutCustomer = ({ onSubmit }: CheckoutCustomerProps) => {
                   (errors?.billingAddressCity || billingValidationFailure) &&
                   "border-red-500"
                 }
-                disabled={isSubmitting}
+                disabled={isSubmitting || !editMode}
               />
             </div>
           </>
         ) : null}
 
-        <Button className="flex self-end" type="submit" disabled={isSubmitting}>
-          Save ({isValid.toString()})
-        </Button>
+        <div className="flex gap-2 justify-end">
+          {editMode ? (
+            <Button
+              className="flex self-end"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              Save
+            </Button>
+          ) : (
+            <Button
+              className="flex self-end"
+              type="button"
+              disabled={isSubmitting}
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                toggleEditMode();
+              }}
+            >
+              Edit
+            </Button>
+          )}
+        </div>
       </div>
     </form>
   );
