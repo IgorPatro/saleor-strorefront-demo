@@ -5,17 +5,19 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-method-update";
 import { CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-address-update";
-import { useMutation } from "@apollo/client";
+import { useApolloClient, useMutation } from "@apollo/client";
+import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 
 import {
-  type CheckoutFormShippingInterface,
-  CheckoutFormShippingSchema,
+  type CheckoutShippingFormValues,
+  CheckoutShippingFormSchema,
 } from "./types";
 
 export const useCheckoutFormShipping = (
   checkoutId: string,
   parcelLockerShippingMethodId?: string
 ) => {
+  const client = useApolloClient();
   const { push } = useRouter();
   const [updateShippingMethod] = useMutation(
     CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION
@@ -24,8 +26,8 @@ export const useCheckoutFormShipping = (
     CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION
   );
 
-  const form = useForm<CheckoutFormShippingInterface>({
-    resolver: zodResolver(CheckoutFormShippingSchema),
+  const form = useForm<CheckoutShippingFormValues>({
+    resolver: zodResolver(CheckoutShippingFormSchema),
     defaultValues: {
       parcelLockerName: null,
       parcelLockerCity: null,
@@ -36,7 +38,7 @@ export const useCheckoutFormShipping = (
     },
   });
 
-  const onSubmit = async (values: CheckoutFormShippingInterface) => {
+  const onSubmit = async (values: CheckoutShippingFormValues) => {
     await updateShippingMethod({
       variables: {
         checkoutId,
@@ -44,33 +46,38 @@ export const useCheckoutFormShipping = (
       },
     });
 
-    if (
-      values.parcelLockerName &&
-      values.parcelLockerCity &&
-      values.parcelLockerStreet &&
-      values.parcelLockerPostalCode &&
-      parcelLockerShippingMethodId === values.shippingMethodId
-    ) {
-      await updateShippingAddress({
-        variables: {
-          checkoutId,
-          city: values.parcelLockerCity,
-          streetAddress1: values.parcelLockerStreet,
-          postalCode: values.parcelLockerPostalCode,
-          streetAddress2: values.parcelLockerName,
-        },
-      });
-    }
+    // TODO: Add parcel locker info to order note
+    // if (
+    //   values.parcelLockerName &&
+    //   values.parcelLockerCity &&
+    //   values.parcelLockerStreet &&
+    //   values.parcelLockerPostalCode &&
+    //   parcelLockerShippingMethodId === values.shippingMethodId
+    // ) {
+    //   await updateShippingAddress({
+    //     variables: {
+    //       checkoutId,
+    //       city: values.parcelLockerCity,
+    //       streetAddress1: values.parcelLockerStreet,
+    //       postalCode: values.parcelLockerPostalCode,
+    //       streetAddress2: values.parcelLockerName,
+    //     },
+    //   });
+    // }
 
-    try {
-      const { data } = await axios.post("/api/generate-order", {
-        checkoutId,
-      });
+    // try {
+    //   const { data } = await axios.post("/api/generate-order", {
+    //     checkoutId,
+    //   });
 
-      return push(data.link);
-    } catch (err) {
-      console.log(err);
-    }
+    //   return push(data.link);
+    // } catch (err) {
+    //   console.log(err);
+    // }
+
+    await client.refetchQueries({
+      include: [CHECKOUT_QUERY],
+    });
   };
 
   return {

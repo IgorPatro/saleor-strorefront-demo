@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const CheckoutFormShippingSchema = z.object({
+export const CheckoutShippingFormSchema = z.object({
   parcelLockerName: z.string().optional().nullable(),
   parcelLockerCity: z.string().optional().nullable(),
   parcelLockerStreet: z.string().optional().nullable(),
@@ -9,6 +9,6 @@ export const CheckoutFormShippingSchema = z.object({
   shippingMethodId: z.string().min(1, "Please select shipping method"),
 });
 
-export type CheckoutFormShippingInterface = z.infer<
-  typeof CheckoutFormShippingSchema
+export type CheckoutShippingFormValues = z.infer<
+  typeof CheckoutShippingFormSchema
 >;

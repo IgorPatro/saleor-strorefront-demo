@@ -17,9 +17,22 @@ interface CheckoutPageProps {
 }
 
 const CheckoutPage = ({ checkoutId }: CheckoutPageProps) => {
+  const { data: checkoutData, loading: isLoading } = useQuery(CHECKOUT_QUERY, {
+    variables: {
+      checkoutId: checkoutId,
+    },
+    notifyOnNetworkStatusChange: true,
+  });
+
+  if (!checkoutData?.checkout) return "No checkout data";
+
   return (
     <div className="p-4 flex gap-10">
-      <CheckoutForm checkoutId={checkoutId} />
+      <CheckoutForm
+        checkoutId={checkoutId}
+        checkoutData={checkoutData}
+        isLoading={isLoading}
+      />
     </div>
   );
 };

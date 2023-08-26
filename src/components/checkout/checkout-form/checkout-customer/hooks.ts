@@ -11,31 +11,22 @@ import { ME_QUERY } from "@/graphql/queries/me";
 import { type CheckoutQuery } from "@/saleor/graphql";
 
 import {
-  CheckoutFormCustomerSchema,
-  type CheckoutFormCustomerInterface,
+  CheckoutCustomerDataFormSchema,
+  type CheckoutCustomerDataFormValues,
 } from "./types";
 
 export const useCheckoutFormCustomer = (
   checkoutId: string,
-  checkoutData: CheckoutQuery
+  checkoutData: CheckoutQuery,
+  onSubmitSuccess: () => void
 ) => {
   const client = useApolloClient();
   const { data } = useQuery(ME_QUERY);
 
-  const form = useForm<CheckoutFormCustomerInterface>({
-    resolver: zodResolver(CheckoutFormCustomerSchema),
+  const form = useForm<CheckoutCustomerDataFormValues>({
+    resolver: zodResolver(CheckoutCustomerDataFormSchema),
     defaultValues: {
-      billingEmail: checkoutData.checkout?.email ?? "",
-
-      billingPhone: checkoutData.checkout?.billingAddress?.phone ?? "",
-      billingFirstName: checkoutData.checkout?.billingAddress?.firstName ?? "",
-      billingLastName: checkoutData.checkout?.billingAddress?.lastName ?? "",
-      billingAddressCity: checkoutData.checkout?.billingAddress?.city ?? "",
-      billingAddressStreet:
-        checkoutData.checkout?.billingAddress?.streetAddress1 ?? "",
-      billingPostalCode:
-        checkoutData.checkout?.billingAddress?.postalCode ?? "",
-
+      email: checkoutData.checkout?.email ?? "",
       shippingPhone: checkoutData.checkout?.shippingAddress?.phone ?? "",
       shippingFirstName:
         checkoutData.checkout?.shippingAddress?.firstName ?? "",
@@ -45,6 +36,15 @@ export const useCheckoutFormCustomer = (
         checkoutData.checkout?.shippingAddress?.streetAddress1 ?? "",
       shippingPostalCode:
         checkoutData.checkout?.shippingAddress?.postalCode ?? "",
+
+      note: "",
+      requireInvoice: false,
+
+      billingCompany: "",
+      billingNip: "",
+      billingAddressCity: "",
+      billingAddressStreet: "",
+      billingPostalCode: "",
     },
   });
 
@@ -107,23 +107,11 @@ export const useCheckoutFormCustomer = (
     CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION
   );
 
-  const onSubmit = async (values: CheckoutFormCustomerInterface) => {
+  const onSubmit = async (values: CheckoutCustomerDataFormValues) => {
     await updateEmail({
       variables: {
         checkoutId,
-        email: values.billingEmail,
-      },
-    });
-
-    await updateBillingAddress({
-      variables: {
-        checkoutId,
-        firstName: values.billingFirstName,
-        lastName: values.billingLastName,
-        phone: values.billingPhone,
-        city: values.billingAddressCity,
-        streetAddress1: values.billingAddressStreet,
-        postalCode: values.billingPostalCode,
+        email: values.email,
       },
     });
 
@@ -139,9 +127,25 @@ export const useCheckoutFormCustomer = (
       },
     });
 
+    await updateBillingAddress({
+      variables: {
+        checkoutId,
+        firstName: values.shippingFirstName,
+        lastName: values.shippingLastName,
+        phone: values.shippingPhone,
+        city: values.billingAddressCity || values.shippingAddressCity,
+        companyName: `${values.billingCompany} ${values.billingNip}`,
+        streetAddress1:
+          values.billingAddressStreet || values.shippingAddressStreet,
+        postalCode: values.billingPostalCode || values.shippingPostalCode,
+      },
+    });
+
     await client.refetchQueries({
       include: [CHECKOUT_QUERY],
     });
+
+    return onSubmitSuccess();
   };
 
   return {
