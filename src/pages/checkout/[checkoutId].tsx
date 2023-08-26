@@ -17,14 +17,11 @@ interface CheckoutPageProps {
 }
 
 const CheckoutPage = ({ checkoutId }: CheckoutPageProps) => {
-  const {
-    data: checkoutData,
-    loading: isLoading,
-    refetch,
-  } = useQuery(CHECKOUT_QUERY, {
+  const { data: checkoutData, loading: isLoading } = useQuery(CHECKOUT_QUERY, {
     variables: {
       checkoutId: checkoutId,
     },
+    notifyOnNetworkStatusChange: true,
   });
 
   if (!checkoutData?.checkout) return "No checkout data";
@@ -35,7 +32,6 @@ const CheckoutPage = ({ checkoutId }: CheckoutPageProps) => {
         checkoutId={checkoutId}
         checkoutData={checkoutData}
         isLoading={isLoading}
-        refetch={refetch}
       />
     </div>
   );

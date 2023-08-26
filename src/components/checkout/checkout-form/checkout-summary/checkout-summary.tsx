@@ -18,7 +18,9 @@ export const CheckoutSummary = ({
       {checkoutData.checkout?.lines.map((line) => (
         <CheckoutProductItem key={line.id} line={line as CheckoutLine} />
       ))}
-      <div>Total: {checkoutData.checkout?.totalPrice?.gross.amount}PLN</div>
+      <div className="text-2xl font-bold">
+        Total: {checkoutData.checkout?.totalPrice?.gross.amount}PLN
+      </div>
       <Button disabled={isDisabled}>Pay</Button>
     </div>
   );

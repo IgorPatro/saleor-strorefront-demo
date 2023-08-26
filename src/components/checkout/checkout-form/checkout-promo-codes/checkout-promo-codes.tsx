@@ -5,6 +5,8 @@ import { useMutation, useApolloClient } from "@apollo/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
+import { CHECKOUT_REMOVE_PROMO_CODE_MUTATION } from "@/graphql/mutations/checkout/checkout-remove-promo-code";
+import { set } from "react-hook-form";
 
 interface CheckoutPromoCodesProps {
   checkoutId: string;
@@ -17,6 +19,7 @@ export const CheckoutPromoCodes = ({
 }: CheckoutPromoCodesProps) => {
   const [promoCode, setPromoCode] = React.useState<string>("");
   const [addPromoCode] = useMutation(CHECKOUT_ADD_PROMO_CODE_MUTATION);
+  const [removePromoCode] = useMutation(CHECKOUT_REMOVE_PROMO_CODE_MUTATION);
   const client = useApolloClient();
 
   const handleAddPromoCode = async () => {
@@ -32,14 +35,36 @@ export const CheckoutPromoCodes = ({
     });
   };
 
+  const handleRemovePromoCode = async () => {
+    if (!checkoutData?.checkout?.voucherCode) return;
+
+    const { data } = await removePromoCode({
+      variables: {
+        checkoutId,
+        promoCode: checkoutData.checkout.voucherCode,
+      },
+    });
+
+    await client.refetchQueries({
+      include: [CHECKOUT_QUERY],
+    });
+
+    return setPromoCode("");
+  };
+
   const promoCodeName = checkoutData?.checkout?.voucherCode;
 
   return (
     <div>
       {promoCodeName ? (
-        <div>
-          {checkoutData?.checkout?.voucherCode} applied (-
-          {checkoutData?.checkout?.discount?.amount}PLN)
+        <div className="flex justify-between items-center">
+          <div>
+            {checkoutData?.checkout?.voucherCode} applied (-
+            {checkoutData?.checkout?.discount?.amount}PLN)
+          </div>
+          <Button variant="destructive" onClick={handleRemovePromoCode}>
+            Remove
+          </Button>
         </div>
       ) : (
         <div className="flex gap-2">
