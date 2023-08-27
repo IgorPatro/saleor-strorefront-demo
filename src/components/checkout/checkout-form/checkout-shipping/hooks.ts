@@ -13,17 +13,11 @@ import {
   CheckoutShippingFormSchema,
 } from "./types";
 
-export const useCheckoutFormShipping = (
-  checkoutId: string,
-  parcelLockerShippingMethodId?: string
-) => {
+export const useCheckoutShippingForm = (checkoutId: string) => {
   const client = useApolloClient();
   const { push } = useRouter();
   const [updateShippingMethod] = useMutation(
     CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION
-  );
-  const [updateShippingAddress] = useMutation(
-    CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION
   );
 
   const form = useForm<CheckoutShippingFormValues>({

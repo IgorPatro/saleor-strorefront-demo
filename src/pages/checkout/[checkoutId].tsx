@@ -1,4 +1,4 @@
-import React from "react";
+import React, { type ReactNode } from "react";
 import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 import { GetServerSideProps } from "next";
 import { useQuery } from "@apollo/client";
@@ -27,14 +27,16 @@ const CheckoutPage = ({ checkoutId }: CheckoutPageProps) => {
   if (!checkoutData?.checkout) return "No checkout data";
 
   return (
-    <div className="p-4 flex gap-10">
-      <CheckoutForm
-        checkoutId={checkoutId}
-        checkoutData={checkoutData}
-        isLoading={isLoading}
-      />
-    </div>
+    <CheckoutForm
+      checkoutId={checkoutId}
+      checkoutData={checkoutData}
+      // isLoading={isLoading}
+    />
   );
+};
+
+CheckoutPage.getLayout = (page: ReactNode): ReactNode => {
+  return <>{page}</>;
 };
 
 export default CheckoutPage;

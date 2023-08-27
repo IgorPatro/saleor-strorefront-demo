@@ -11,22 +11,16 @@ import { CheckoutCustomerDataFormValues } from "./types";
 
 interface CheckoutCustomerProps {
   onSubmit: (data: CheckoutCustomerDataFormValues) => void;
-  editMode: boolean;
-  toggleEditMode: () => void;
 }
 
-export const CheckoutCustomer = ({
-  onSubmit,
-  editMode,
-  toggleEditMode,
-}: CheckoutCustomerProps) => {
+export const CheckoutInfo = ({ onSubmit }: CheckoutCustomerProps) => {
   const form = useFormContext<CheckoutCustomerDataFormValues>();
 
   const {
     watch,
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting },
   } = form;
 
   const requireInvoice = watch("requireInvoice");
@@ -43,20 +37,21 @@ export const CheckoutCustomer = ({
       className="w-full space-y-4 max-w-2xl"
     >
       <div className="flex flex-col gap-4 justify-end">
-        <h1 className="text-2xl font-semibold">Customer data</h1>
+        <h1 className="text-2xl font-semibold">Twoje zamówienie</h1>
+        <p>{"Koszyk > Informacje > Dostawa > Płatność"}</p>
 
         <div className="flex gap-3">
           <Input
             placeholder="First name"
             {...register("shippingFirstName")}
             className={errors?.shippingFirstName && "border-red-500"}
-            disabled={isSubmitting || !editMode}
+            disabled={isSubmitting}
           />
           <Input
             placeholder="Last name"
             {...register("shippingLastName")}
             className={errors?.shippingLastName && "border-red-500"}
-            disabled={isSubmitting || !editMode}
+            disabled={isSubmitting}
           />
         </div>
 
@@ -65,43 +60,42 @@ export const CheckoutCustomer = ({
             placeholder="Email"
             {...register("email")}
             className={errors?.email && "border-red-500"}
-            disabled={isSubmitting || !editMode}
+            disabled={isSubmitting}
           />
           <Input
             placeholder="Phone"
             {...register("shippingPhone")}
             className={errors?.shippingPhone && "border-red-500"}
-            disabled={isSubmitting || !editMode}
+            disabled={isSubmitting}
           />
         </div>
 
+        <Input
+          placeholder="Address"
+          {...register("shippingAddressStreet")}
+          className={errors?.shippingAddressStreet && "border-red-500"}
+          disabled={isSubmitting}
+        />
         <div className="flex gap-3">
-          <Input
-            placeholder="Address"
-            {...register("shippingAddressStreet")}
-            className={errors?.shippingAddressStreet && "border-red-500"}
-            disabled={isSubmitting || !editMode}
-          />
           <Input
             placeholder="Postal code"
             {...register("shippingPostalCode")}
             className={errors?.shippingPostalCode && "border-red-500"}
-            disabled={isSubmitting || !editMode}
+            disabled={isSubmitting}
           />
           <Input
             placeholder="City"
             {...register("shippingAddressCity")}
             className={errors?.shippingAddressCity && "border-red-500"}
-            disabled={isSubmitting || !editMode}
+            disabled={isSubmitting}
           />
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 my-2">
           <label
             htmlFor="requireInvoice"
             className={twMerge(
-              "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-20",
-              !editMode && "opacity-50"
+              "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-20"
             )}
           >
             Require invoice
@@ -113,7 +107,7 @@ export const CheckoutCustomer = ({
               <Checkbox
                 checked={field.value}
                 onCheckedChange={field.onChange}
-                disabled={isSubmitting || !editMode}
+                disabled={isSubmitting}
               />
             )}
           />
@@ -129,7 +123,7 @@ export const CheckoutCustomer = ({
                   (errors?.billingCompany || billingValidationFailure) &&
                   "border-red-500"
                 }
-                disabled={isSubmitting || !editMode}
+                disabled={isSubmitting}
               />
               <Input
                 placeholder="NIP"
@@ -138,20 +132,21 @@ export const CheckoutCustomer = ({
                   (errors?.billingNip || billingValidationFailure) &&
                   "border-red-500"
                 }
-                disabled={isSubmitting || !editMode}
+                disabled={isSubmitting}
               />
             </div>
 
+            <Input
+              placeholder="Address"
+              {...register("billingAddressStreet")}
+              className={
+                (errors?.billingAddressStreet || billingValidationFailure) &&
+                "border-red-500"
+              }
+              disabled={isSubmitting}
+            />
+
             <div className="flex gap-3">
-              <Input
-                placeholder="Address"
-                {...register("billingAddressStreet")}
-                className={
-                  (errors?.billingAddressStreet || billingValidationFailure) &&
-                  "border-red-500"
-                }
-                disabled={isSubmitting || !editMode}
-              />
               <Input
                 placeholder="Postal code"
                 {...register("billingPostalCode")}
@@ -159,7 +154,7 @@ export const CheckoutCustomer = ({
                   (errors?.billingPostalCode || billingValidationFailure) &&
                   "border-red-500"
                 }
-                disabled={isSubmitting || !editMode}
+                disabled={isSubmitting}
               />
               <Input
                 placeholder="City"
@@ -168,36 +163,13 @@ export const CheckoutCustomer = ({
                   (errors?.billingAddressCity || billingValidationFailure) &&
                   "border-red-500"
                 }
-                disabled={isSubmitting || !editMode}
+                disabled={isSubmitting}
               />
             </div>
           </>
         ) : null}
 
-        <div className="flex gap-2 justify-end">
-          {editMode ? (
-            <Button
-              className="flex self-end"
-              type="submit"
-              disabled={isSubmitting}
-            >
-              Save
-            </Button>
-          ) : (
-            <Button
-              className="flex self-end"
-              type="button"
-              disabled={isSubmitting}
-              variant="outline"
-              onClick={(e) => {
-                e.preventDefault();
-                toggleEditMode();
-              }}
-            >
-              Edit
-            </Button>
-          )}
-        </div>
+        <Button className="self-end">Przejdź do dostawy</Button>
       </div>
     </form>
   );

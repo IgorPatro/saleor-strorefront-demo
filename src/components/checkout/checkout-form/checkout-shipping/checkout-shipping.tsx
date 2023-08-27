@@ -25,7 +25,7 @@ export const CheckoutShipping = ({
   const form = useFormContext<CheckoutShippingFormValues>();
   const [showGeowidget, setShowGeowidget] = React.useState(false);
 
-  const { setValue, watch, getValues, trigger } = form;
+  const { setValue, watch, getValues, trigger, handleSubmit } = form;
 
   const watchShippingMethodId = watch("shippingMethodId");
   const watchAll = watch();
@@ -79,7 +79,10 @@ export const CheckoutShipping = ({
   };
 
   return (
-    <div className="flex flex-col gap-8">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full space-y-4 max-w-2xl"
+    >
       <div className="flex flex-col gap-4 justify-end">
         <h1 className="text-2xl font-semibold">Dostawa</h1>
         <RadioGroup
@@ -137,6 +140,6 @@ export const CheckoutShipping = ({
           </AlertDialogContent>
         </AlertDialog>
       </div>
-    </div>
+    </form>
   );
 };

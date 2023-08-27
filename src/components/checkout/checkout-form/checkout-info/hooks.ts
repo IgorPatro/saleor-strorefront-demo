@@ -15,10 +15,9 @@ import {
   type CheckoutCustomerDataFormValues,
 } from "./types";
 
-export const useCheckoutFormCustomer = (
+export const useCheckoutInfoForm = (
   checkoutId: string,
-  checkoutData: CheckoutQuery,
-  onSubmitSuccess: () => void
+  onMoveNext: () => void
 ) => {
   const client = useApolloClient();
   const { data } = useQuery(ME_QUERY);
@@ -26,16 +25,13 @@ export const useCheckoutFormCustomer = (
   const form = useForm<CheckoutCustomerDataFormValues>({
     resolver: zodResolver(CheckoutCustomerDataFormSchema),
     defaultValues: {
-      email: checkoutData.checkout?.email ?? "",
-      shippingPhone: checkoutData.checkout?.shippingAddress?.phone ?? "",
-      shippingFirstName:
-        checkoutData.checkout?.shippingAddress?.firstName ?? "",
-      shippingLastName: checkoutData.checkout?.shippingAddress?.lastName ?? "",
-      shippingAddressCity: checkoutData.checkout?.shippingAddress?.city ?? "",
-      shippingAddressStreet:
-        checkoutData.checkout?.shippingAddress?.streetAddress1 ?? "",
-      shippingPostalCode:
-        checkoutData.checkout?.shippingAddress?.postalCode ?? "",
+      email: "",
+      shippingPhone: "",
+      shippingFirstName: "",
+      shippingLastName: "",
+      shippingAddressCity: "",
+      shippingAddressStreet: "",
+      shippingPostalCode: "",
 
       note: "",
       requireInvoice: false,
@@ -145,7 +141,7 @@ export const useCheckoutFormCustomer = (
       include: [CHECKOUT_QUERY],
     });
 
-    return onSubmitSuccess();
+    return onMoveNext();
   };
 
   return {
