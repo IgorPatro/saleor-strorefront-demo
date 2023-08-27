@@ -2,7 +2,7 @@ import { gql } from "@/saleor/gql";
 
 export const ORDER_CREATE_FROM_CHECKOUT_MUTATION = gql(`
   mutation OrderCreateFromCheckout($checkoutId: ID!) {
-    orderCreateFromCheckout(id: $checkoutId) {
+    orderCreateFromCheckout(id: $checkoutId, removeCheckout: false) {
       order {
         status
         id

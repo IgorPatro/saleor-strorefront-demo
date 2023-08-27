@@ -1,25 +1,24 @@
-import React from "react";
 import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import axios from "axios";
-import { type CheckoutQuery } from "@/saleor/graphql";
-import { CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-method-update";
-import { CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-address-update";
-import { useApolloClient, useMutation } from "@apollo/client";
-import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
+import { useCreateOrder } from "@/network/create-order";
+import { UseFormReturn } from "react-hook-form";
+import { type CheckoutInfoFormValues } from "../checkout-info/types";
 
 import {
   type CheckoutShippingFormValues,
   CheckoutShippingFormSchema,
 } from "./types";
 
-export const useCheckoutShippingForm = (checkoutId: string) => {
-  const client = useApolloClient();
+export const useCheckoutShippingForm = (
+  checkoutId: string,
+  infoForm: UseFormReturn<CheckoutInfoFormValues>
+) => {
   const { push } = useRouter();
-  const [updateShippingMethod] = useMutation(
-    CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION
-  );
+
+  const { getValues: getInfoFormValues } = infoForm;
+
+  const { mutateAsync: createOrder } = useCreateOrder();
 
   const form = useForm<CheckoutShippingFormValues>({
     resolver: zodResolver(CheckoutShippingFormSchema),
@@ -34,36 +33,39 @@ export const useCheckoutShippingForm = (checkoutId: string) => {
   });
 
   const onSubmit = async (values: CheckoutShippingFormValues) => {
-    return console.log(values);
+    const infoValues = getInfoFormValues();
 
-    // TODO: Add parcel locker info to order note
-    // if (
-    //   values.parcelLockerName &&
-    //   values.parcelLockerCity &&
-    //   values.parcelLockerStreet &&
-    //   values.parcelLockerPostalCode &&
-    //   parcelLockerShippingMethodId === values.shippingMethodId
-    // ) {
-    //   await updateShippingAddress({
-    //     variables: {
-    //       checkoutId,
-    //       city: values.parcelLockerCity,
-    //       streetAddress1: values.parcelLockerStreet,
-    //       postalCode: values.parcelLockerPostalCode,
-    //       streetAddress2: values.parcelLockerName,
-    //     },
-    //   });
-    // }
+    const note = `
+      ${
+        values.parcelLockerName
+          ? `Paczkomat:
+        ${values.parcelLockerName ?? ""}
+        ${values.parcelLockerStreet ?? ""}
+        ${values.parcelLockerPostalCode ?? ""}
+        ${values.parcelLockerCity ?? ""}
 
-    // try {
-    //   const { data } = await axios.post("/api/generate-order", {
-    //     checkoutId,
-    //   });
+      `
+          : ""
+      }
+      ${
+        infoValues.requireInvoice
+          ? `Faktura:
+        ${infoValues.billingCompany}
+        ${infoValues.billingNip}
+        ${infoValues.billingAddressStreet}
+        ${infoValues.billingPostalCode}
+        ${infoValues.billingAddressCity}
+      `
+          : ""
+      }
+    `;
 
-    //   return push(data.link);
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    const data = await createOrder({
+      checkoutId,
+      note,
+    });
+
+    return push(data.link);
   };
 
   return {

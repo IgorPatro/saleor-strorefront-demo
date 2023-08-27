@@ -41,7 +41,7 @@ export const CheckoutForm = ({
   } = infoForm;
 
   const { form: shippingForm, onSubmit: onShippingFormSubmit } =
-    useCheckoutShippingForm(checkoutId);
+    useCheckoutShippingForm(checkoutId, infoForm);
 
   const {
     formState: { isValid: isShippingFormValid, errors: shippingFormErrors },

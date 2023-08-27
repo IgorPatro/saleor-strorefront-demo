@@ -5,6 +5,11 @@ import Script from "next/script";
 import React, { ReactElement, ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
 import { client } from "@/utils/apollo-client";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 import "@/styles/global.css";
 
 import { Layout } from "@/components/layout";
@@ -21,6 +26,8 @@ const defaultGetLayout = (page: ReactNode): ReactNode => {
   return <Layout>{page}</Layout>;
 };
 
+const queryClient = new QueryClient();
+
 function MyApp({
   Component,
   pageProps: { session, ...pageProps },
@@ -30,13 +37,13 @@ function MyApp({
     : defaultGetLayout;
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <SessionProvider session={session}>
         <ApolloProvider client={client}>
           {getLayout(<Component {...pageProps} />)}
         </ApolloProvider>
       </SessionProvider>
-    </>
+    </QueryClientProvider>
   );
 }
 
