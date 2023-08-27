@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const CheckoutCustomerDataFormSchema = z
+export const CheckoutInfoFormSchema = z
   .object({
     email: z.string().email(),
     shippingPhone: z.string().min(5),
@@ -38,6 +38,4 @@ export const CheckoutCustomerDataFormSchema = z
     }
   );
 
-export type CheckoutCustomerDataFormValues = z.infer<
-  typeof CheckoutCustomerDataFormSchema
->;
+export type CheckoutInfoFormValues = z.infer<typeof CheckoutInfoFormSchema>;

@@ -60,6 +60,7 @@ export const CheckoutForm = ({
             <CheckoutShipping
               checkoutId={checkoutId}
               checkoutData={checkoutData}
+              infoForm={infoForm}
               parcelLockerShippingMethodId={parcelLockerShippingMethodId}
               onSubmit={onShippingFormSubmit}
               onMoveBack={handleGoToInfo}

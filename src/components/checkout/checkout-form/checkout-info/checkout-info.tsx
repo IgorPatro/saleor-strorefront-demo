@@ -7,14 +7,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { FieldErrors } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 
-import { CheckoutCustomerDataFormValues } from "./types";
+import { CheckoutInfoFormValues } from "./types";
 
 interface CheckoutCustomerProps {
-  onSubmit: (data: CheckoutCustomerDataFormValues) => void;
+  onSubmit: (data: CheckoutInfoFormValues) => void;
 }
 
 export const CheckoutInfo = ({ onSubmit }: CheckoutCustomerProps) => {
-  const form = useFormContext<CheckoutCustomerDataFormValues>();
+  const form = useFormContext<CheckoutInfoFormValues>();
 
   const {
     watch,

@@ -10,10 +10,7 @@ import { useQuery } from "@apollo/client";
 import { ME_QUERY } from "@/graphql/queries/me";
 import { type CheckoutQuery } from "@/saleor/graphql";
 
-import {
-  CheckoutCustomerDataFormSchema,
-  type CheckoutCustomerDataFormValues,
-} from "./types";
+import { CheckoutInfoFormSchema, type CheckoutInfoFormValues } from "./types";
 
 export const useCheckoutInfoForm = (
   checkoutId: string,
@@ -22,8 +19,8 @@ export const useCheckoutInfoForm = (
   const client = useApolloClient();
   const { data } = useQuery(ME_QUERY);
 
-  const form = useForm<CheckoutCustomerDataFormValues>({
-    resolver: zodResolver(CheckoutCustomerDataFormSchema),
+  const form = useForm<CheckoutInfoFormValues>({
+    resolver: zodResolver(CheckoutInfoFormSchema),
     defaultValues: {
       email: "",
       shippingPhone: "",
@@ -103,7 +100,7 @@ export const useCheckoutInfoForm = (
     CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION
   );
 
-  const onSubmit = async (values: CheckoutCustomerDataFormValues) => {
+  const onSubmit = async (values: CheckoutInfoFormValues) => {
     await updateEmail({
       variables: {
         checkoutId,

@@ -7,16 +7,19 @@ import { CheckoutQuery } from "@/saleor/graphql";
 import { type InpostGeowidgetPoint } from "@/types/inpost-geowidget";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { UseFormReturn } from "react-hook-form";
 import { CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-method-update";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
 import { useMutation, useApolloClient } from "@apollo/client";
 import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
+import { type CheckoutInfoFormValues } from "../checkout-info/types";
 
 import { type CheckoutShippingFormValues } from "./types";
 
 interface CheckoutShippingProps {
   checkoutId: string;
   checkoutData: CheckoutQuery;
+  infoForm: UseFormReturn<CheckoutInfoFormValues>;
   parcelLockerShippingMethodId?: string;
   onSubmit: (data: CheckoutShippingFormValues) => void;
   onMoveBack: () => void;
@@ -25,6 +28,7 @@ interface CheckoutShippingProps {
 export const CheckoutShipping = ({
   checkoutId,
   checkoutData,
+  infoForm,
   parcelLockerShippingMethodId,
   onSubmit,
   onMoveBack,
@@ -42,6 +46,10 @@ export const CheckoutShipping = ({
     handleSubmit,
     formState: { isSubmitting },
   } = form;
+
+  const { getValues } = infoForm;
+
+  const infoData = getValues();
 
   const watchShippingMethodId = watch("shippingMethodId");
   const watchAll = watch();
@@ -107,8 +115,24 @@ export const CheckoutShipping = ({
       className="w-full space-y-4 max-w-2xl"
     >
       <div className="flex flex-col gap-4 justify-end">
-        <h1 className="text-2xl font-semibold">Dostawa</h1>
+        <h1 className="text-2xl font-semibold">Twoje zamówienie</h1>
         <p>{"Koszyk > Informacje > Dostawa > Płatność"}</p>
+
+        <Card className="p-4 flex flex-col gap-1">
+          Kontakt: {infoData.email}
+          <hr />
+          Dostawa: {infoData.shippingAddressStreet}
+          {", "}
+          {infoData.shippingPostalCode} {infoData.shippingAddressCity}
+          <hr />
+          Faktura: {infoData.billingCompany}, {infoData.billingNip}
+        </Card>
+        <Button className="self-end" onClick={onMoveBack} type="button">
+          Edytuj
+        </Button>
+
+        <h1 className="text-2xl font-semibold">Metody dostawy</h1>
+
         <RadioGroup
           onValueChange={onShippingMethodChange}
           value={watchShippingMethodId}
