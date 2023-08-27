@@ -10,32 +10,25 @@ import { useQuery } from "@apollo/client";
 import { ME_QUERY } from "@/graphql/queries/me";
 import { type CheckoutQuery } from "@/saleor/graphql";
 
-import {
-  CheckoutCustomerDataFormSchema,
-  type CheckoutCustomerDataFormValues,
-} from "./types";
+import { CheckoutInfoFormSchema, type CheckoutInfoFormValues } from "./types";
 
-export const useCheckoutFormCustomer = (
+export const useCheckoutInfoForm = (
   checkoutId: string,
-  checkoutData: CheckoutQuery,
-  onSubmitSuccess: () => void
+  onMoveNext: () => void
 ) => {
   const client = useApolloClient();
   const { data } = useQuery(ME_QUERY);
 
-  const form = useForm<CheckoutCustomerDataFormValues>({
-    resolver: zodResolver(CheckoutCustomerDataFormSchema),
+  const form = useForm<CheckoutInfoFormValues>({
+    resolver: zodResolver(CheckoutInfoFormSchema),
     defaultValues: {
-      email: checkoutData.checkout?.email ?? "",
-      shippingPhone: checkoutData.checkout?.shippingAddress?.phone ?? "",
-      shippingFirstName:
-        checkoutData.checkout?.shippingAddress?.firstName ?? "",
-      shippingLastName: checkoutData.checkout?.shippingAddress?.lastName ?? "",
-      shippingAddressCity: checkoutData.checkout?.shippingAddress?.city ?? "",
-      shippingAddressStreet:
-        checkoutData.checkout?.shippingAddress?.streetAddress1 ?? "",
-      shippingPostalCode:
-        checkoutData.checkout?.shippingAddress?.postalCode ?? "",
+      email: "",
+      shippingPhone: "",
+      shippingFirstName: "",
+      shippingLastName: "",
+      shippingAddressCity: "",
+      shippingAddressStreet: "",
+      shippingPostalCode: "",
 
       note: "",
       requireInvoice: false,
@@ -107,7 +100,7 @@ export const useCheckoutFormCustomer = (
     CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION
   );
 
-  const onSubmit = async (values: CheckoutCustomerDataFormValues) => {
+  const onSubmit = async (values: CheckoutInfoFormValues) => {
     await updateEmail({
       variables: {
         checkoutId,
@@ -145,7 +138,7 @@ export const useCheckoutFormCustomer = (
       include: [CHECKOUT_QUERY],
     });
 
-    return onSubmitSuccess();
+    return onMoveNext();
   };
 
   return {

@@ -1,27 +1,47 @@
 import React from "react";
-import { CheckoutQuery } from "@/saleor/graphql";
-import { CheckoutProductItem } from "@/components/checkout/checkout-product-item";
+import { type CheckoutQuery } from "@/saleor/graphql";
 import { type CheckoutLine } from "@/saleor/graphql";
-import { Button } from "@/components/ui/button";
+import { UseFormReturn } from "react-hook-form";
+
+import { CheckoutPromoCodes } from "../checkout-promo-codes";
+import { CheckoutProduct } from "../checkout-product";
+import { type CheckoutShippingFormValues } from "../checkout-shipping/types";
 
 interface CheckoutSummaryProps {
+  checkoutId: string;
   checkoutData: CheckoutQuery;
-  isDisabled?: boolean;
+  step: "info" | "shipping";
+  shippingForm: UseFormReturn<CheckoutShippingFormValues>;
 }
 
 export const CheckoutSummary = ({
+  checkoutId,
   checkoutData,
-  isDisabled,
+  step,
+  shippingForm,
 }: CheckoutSummaryProps) => {
+  const { watch } = shippingForm;
+
+  const shippingMethodId = watch("shippingMethodId");
+
   return (
-    <div className="w-full flex flex-col gap-3">
+    <div className="flex flex-col w-1/2 bg-gray-100 p-10 gap-4">
       {checkoutData.checkout?.lines.map((line) => (
-        <CheckoutProductItem key={line.id} line={line as CheckoutLine} />
+        <CheckoutProduct key={line.id} line={line as CheckoutLine} />
       ))}
-      <div className="text-2xl font-bold">
-        Total: {checkoutData.checkout?.totalPrice?.gross.amount}PLN
+      <CheckoutPromoCodes checkoutId={checkoutId} checkoutData={checkoutData} />
+      <div>
+        Subtotal: {checkoutData.checkout?.subtotalPrice?.gross.amount} PLN
+        <br />
+        Shipping:{" "}
+        {step === "info"
+          ? "Obliczana w następnym kroku"
+          : shippingMethodId
+          ? `${checkoutData.checkout?.shippingPrice?.gross.amount} PLN`
+          : "-"}
+        <br />
+        Total: {checkoutData.checkout?.totalPrice?.gross.amount} PLN
       </div>
-      <Button disabled={isDisabled}>Pay</Button>
     </div>
   );
 };

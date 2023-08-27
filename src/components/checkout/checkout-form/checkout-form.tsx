@@ -1,14 +1,13 @@
 import React from "react";
-import { Form } from "@/components/ui/form";
-import { Card } from "@/components/ui/card";
 import { CheckoutQuery } from "@/saleor/graphql";
+import { Form } from "@/components/ui/form";
 
-import { useCheckoutFormCustomer } from "./checkout-customer/hooks";
-import { useCheckoutFormShipping } from "./checkout-shipping/hooks";
-import { CheckoutCustomer } from "./checkout-customer";
-import { CheckoutShipping } from "./checkout-shipping";
 import { CheckoutSummary } from "./checkout-summary";
-import { CheckoutPromoCodes } from "./checkout-promo-codes";
+import { CheckoutInfo } from "./checkout-info";
+import { CheckoutShipping } from "./checkout-shipping";
+
+import { useCheckoutInfoForm } from "../checkout-form/checkout-info/hooks";
+import { useCheckoutShippingForm } from "../checkout-form/checkout-shipping/hooks";
 
 interface CheckoutDataFormProps {
   checkoutId: string;
@@ -21,62 +20,60 @@ export const CheckoutForm = ({
   checkoutData,
   isLoading,
 }: CheckoutDataFormProps) => {
-  const [editMode, setEditMode] = React.useState(false);
+  const [step, setStep] = React.useState<"info" | "shipping">("info");
 
-  const toggleEditMode = () => setEditMode((prev) => !prev);
+  const handleGoToShipping = () => setStep("shipping");
+
+  const handleGoToInfo = () => setStep("info");
 
   const parcelLockerShippingMethodId =
     checkoutData?.checkout?.shippingMethods.find(
       (method) => method.metafields.isParcelLocker
     )?.id;
 
-  const { form: customerDataForm, onSubmit: onCustomerDataFormSubmit } =
-    useCheckoutFormCustomer(checkoutId, checkoutData, toggleEditMode);
+  const { form: infoForm, onSubmit: onInfoFormSubmit } = useCheckoutInfoForm(
+    checkoutId,
+    handleGoToShipping
+  );
 
   const {
-    formState: { isValid: isCustomerDataFormValid, errors: customerFormErrors },
-  } = customerDataForm;
+    formState: { isValid: isInfoFormValid, errors: infoFormErrors },
+  } = infoForm;
 
-  const { form: shippingDataForm, onSubmit: onShippingFormSubmit } =
-    useCheckoutFormShipping(checkoutId, parcelLockerShippingMethodId);
+  const { form: shippingForm, onSubmit: onShippingFormSubmit } =
+    useCheckoutShippingForm(checkoutId, infoForm);
 
   const {
     formState: { isValid: isShippingFormValid, errors: shippingFormErrors },
-  } = shippingDataForm;
+  } = shippingForm;
 
   return (
-    <>
-      <div className="w-full flex flex-col gap-8">
-        <Form {...customerDataForm}>
-          <CheckoutCustomer
-            onSubmit={onCustomerDataFormSubmit}
-            editMode={editMode}
-            toggleEditMode={toggleEditMode}
-          />
-        </Form>
-        <Form {...shippingDataForm}>
-          <CheckoutShipping
-            checkoutData={checkoutData}
-            parcelLockerShippingMethodId={parcelLockerShippingMethodId}
-            onSubmit={onShippingFormSubmit}
-          />
-        </Form>
+    <div className="flex w-full h-screen">
+      <div className="w-1/2 p-10">
+        {step === "info" ? (
+          <Form {...infoForm}>
+            <CheckoutInfo onSubmit={onInfoFormSubmit} />
+          </Form>
+        ) : null}
+        {step === "shipping" ? (
+          <Form {...shippingForm}>
+            <CheckoutShipping
+              checkoutId={checkoutId}
+              checkoutData={checkoutData}
+              infoForm={infoForm}
+              parcelLockerShippingMethodId={parcelLockerShippingMethodId}
+              onSubmit={onShippingFormSubmit}
+              onMoveBack={handleGoToInfo}
+            />
+          </Form>
+        ) : null}
       </div>
-      <Card className="w-full flex flex-col gap-8 p-4">
-        <CheckoutSummary
-          checkoutData={checkoutData}
-          isDisabled={
-            !isCustomerDataFormValid ||
-            !isShippingFormValid ||
-            isLoading ||
-            editMode
-          }
-        />
-        <CheckoutPromoCodes
-          checkoutId={checkoutId}
-          checkoutData={checkoutData}
-        />
-      </Card>
-    </>
+      <CheckoutSummary
+        checkoutId={checkoutId}
+        checkoutData={checkoutData}
+        step={step}
+        shippingForm={shippingForm}
+      />
+    </div>
   );
 };
