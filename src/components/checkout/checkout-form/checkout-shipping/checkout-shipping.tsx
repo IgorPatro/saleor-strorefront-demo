@@ -7,30 +7,46 @@ import { CheckoutQuery } from "@/saleor/graphql";
 import { type InpostGeowidgetPoint } from "@/types/inpost-geowidget";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-method-update";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
+import { useMutation, useApolloClient } from "@apollo/client";
+import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 
 import { type CheckoutShippingFormValues } from "./types";
 
 interface CheckoutShippingProps {
+  checkoutId: string;
   checkoutData: CheckoutQuery;
   parcelLockerShippingMethodId?: string;
   onSubmit: (data: CheckoutShippingFormValues) => void;
+  onMoveBack: () => void;
 }
 
 export const CheckoutShipping = ({
+  checkoutId,
   checkoutData,
   parcelLockerShippingMethodId,
   onSubmit,
+  onMoveBack,
 }: CheckoutShippingProps) => {
   const form = useFormContext<CheckoutShippingFormValues>();
   const [showGeowidget, setShowGeowidget] = React.useState(false);
+  const [updateShippingMethod] = useMutation(
+    CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION
+  );
+  const client = useApolloClient();
 
-  const { setValue, watch, getValues, trigger, handleSubmit } = form;
+  const {
+    setValue,
+    watch,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = form;
 
   const watchShippingMethodId = watch("shippingMethodId");
   const watchAll = watch();
 
-  const onInPostPointSelect = (point: InpostGeowidgetPoint) => {
+  const onInPostPointSelect = async (point: InpostGeowidgetPoint) => {
     if (!parcelLockerShippingMethodId) return;
 
     setValue("shippingMethodId", parcelLockerShippingMethodId);
@@ -44,20 +60,19 @@ export const CheckoutShipping = ({
 
     setShowGeowidget(false);
 
-    trigger();
-    onSubmit(getValues());
+    await updateShippingMethod({
+      variables: {
+        checkoutId,
+        shippingMethodId: parcelLockerShippingMethodId,
+      },
+    });
+
+    await client.refetchQueries({
+      include: [CHECKOUT_QUERY],
+    });
   };
 
-  if (checkoutData.checkout?.shippingMethods.length === 0) {
-    return (
-      <div className="flex flex-col gap-4 justify-end">
-        <h1 className="text-2xl font-semibold">Dostawa</h1>
-        <p>Dodaj adres dostawy, aby zobaczyć dostępne metody dostawy.</p>
-      </div>
-    );
-  }
-
-  const onShippingMethodChange = (newShippingId: string) => {
+  const onShippingMethodChange = async (newShippingId: string) => {
     if (newShippingId === parcelLockerShippingMethodId) {
       return setShowGeowidget(true);
     }
@@ -65,8 +80,16 @@ export const CheckoutShipping = ({
     setValue("shippingMethodId", newShippingId);
     setShowGeowidget(false);
 
-    trigger();
-    onSubmit(getValues());
+    await updateShippingMethod({
+      variables: {
+        checkoutId,
+        shippingMethodId: newShippingId,
+      },
+    });
+
+    await client.refetchQueries({
+      include: [CHECKOUT_QUERY],
+    });
   };
 
   const renderInPostGeowidget = () => {
@@ -85,6 +108,7 @@ export const CheckoutShipping = ({
     >
       <div className="flex flex-col gap-4 justify-end">
         <h1 className="text-2xl font-semibold">Dostawa</h1>
+        <p>{"Koszyk > Informacje > Dostawa > Płatność"}</p>
         <RadioGroup
           onValueChange={onShippingMethodChange}
           value={watchShippingMethodId}
@@ -139,6 +163,13 @@ export const CheckoutShipping = ({
             <div className="mt-8">{renderInPostGeowidget()}</div>
           </AlertDialogContent>
         </AlertDialog>
+      </div>
+
+      <div className="flex justify-between">
+        <button onClick={onMoveBack}> {"< Przejdź do zamówienia"}</button>
+        <Button disabled={isSubmitting} type="submit">
+          Przejdź do płatności
+        </Button>
       </div>
     </form>
   );

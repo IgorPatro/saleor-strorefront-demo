@@ -26,13 +26,7 @@ const CheckoutPage = ({ checkoutId }: CheckoutPageProps) => {
 
   if (!checkoutData?.checkout) return "No checkout data";
 
-  return (
-    <CheckoutForm
-      checkoutId={checkoutId}
-      checkoutData={checkoutData}
-      // isLoading={isLoading}
-    />
-  );
+  return <CheckoutForm checkoutId={checkoutId} checkoutData={checkoutData} />;
 };
 
 CheckoutPage.getLayout = (page: ReactNode): ReactNode => {

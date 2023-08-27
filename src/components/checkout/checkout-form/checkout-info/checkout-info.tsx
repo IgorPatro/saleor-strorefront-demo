@@ -169,7 +169,9 @@ export const CheckoutInfo = ({ onSubmit }: CheckoutCustomerProps) => {
           </>
         ) : null}
 
-        <Button className="self-end">Przejdź do dostawy</Button>
+        <Button disabled={isSubmitting} className="self-end">
+          Przejdź do dostawy
+        </Button>
       </div>
     </form>
   );

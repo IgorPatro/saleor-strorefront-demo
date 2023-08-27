@@ -11,6 +11,16 @@ export const CHECKOUT_QUERY = gql(`
           currency
         }
       }
+      subtotalPrice {
+        gross {
+          amount
+        }
+      }
+      shippingPrice {
+        gross {
+          amount
+        }
+      }
       discount {
         amount
       }

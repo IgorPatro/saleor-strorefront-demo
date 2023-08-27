@@ -24,6 +24,13 @@ export const CheckoutForm = ({
 
   const handleGoToShipping = () => setStep("shipping");
 
+  const handleGoToInfo = () => setStep("info");
+
+  const parcelLockerShippingMethodId =
+    checkoutData?.checkout?.shippingMethods.find(
+      (method) => method.metafields.isParcelLocker
+    )?.id;
+
   const { form: infoForm, onSubmit: onInfoFormSubmit } = useCheckoutInfoForm(
     checkoutId,
     handleGoToShipping
@@ -40,11 +47,6 @@ export const CheckoutForm = ({
     formState: { isValid: isShippingFormValid, errors: shippingFormErrors },
   } = shippingForm;
 
-  const parcelLockerShippingMethodId =
-    checkoutData?.checkout?.shippingMethods.find(
-      (method) => method.metafields.isParcelLocker
-    )?.id;
-
   return (
     <div className="flex w-full h-screen">
       <div className="w-1/2 p-10">
@@ -56,14 +58,21 @@ export const CheckoutForm = ({
         {step === "shipping" ? (
           <Form {...shippingForm}>
             <CheckoutShipping
+              checkoutId={checkoutId}
               checkoutData={checkoutData}
               parcelLockerShippingMethodId={parcelLockerShippingMethodId}
               onSubmit={onShippingFormSubmit}
+              onMoveBack={handleGoToInfo}
             />
           </Form>
         ) : null}
       </div>
-      <CheckoutSummary />
+      <CheckoutSummary
+        checkoutId={checkoutId}
+        checkoutData={checkoutData}
+        step={step}
+        shippingForm={shippingForm}
+      />
     </div>
   );
 };

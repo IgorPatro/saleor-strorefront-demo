@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { type CheckoutQuery } from "@/saleor/graphql";
 import { CHECKOUT_SHIPPING_METHOD_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-method-update";
 import { CHECKOUT_SHIPPING_ADDRESS_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-shipping-address-update";
 import { useApolloClient, useMutation } from "@apollo/client";
@@ -33,12 +34,7 @@ export const useCheckoutShippingForm = (checkoutId: string) => {
   });
 
   const onSubmit = async (values: CheckoutShippingFormValues) => {
-    await updateShippingMethod({
-      variables: {
-        checkoutId,
-        shippingMethodId: values.shippingMethodId,
-      },
-    });
+    return console.log(values);
 
     // TODO: Add parcel locker info to order note
     // if (
@@ -68,10 +64,6 @@ export const useCheckoutShippingForm = (checkoutId: string) => {
     // } catch (err) {
     //   console.log(err);
     // }
-
-    await client.refetchQueries({
-      include: [CHECKOUT_QUERY],
-    });
   };
 
   return {
