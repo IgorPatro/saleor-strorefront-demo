@@ -1,16 +1,13 @@
 import { ApolloProvider } from "@apollo/client";
 import { NextPage } from "next";
 import { AppProps } from "next/app";
-import Script from "next/script";
 import React, { ReactElement, ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
 import { client } from "@/utils/apollo-client";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import { twMerge } from "tailwind-merge";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "@/styles/global.css";
+import { Poppins } from "next/font/google";
 
 import { Layout } from "@/components/layout";
 
@@ -27,6 +24,10 @@ const defaultGetLayout = (page: ReactNode): ReactNode => {
 };
 
 const queryClient = new QueryClient();
+const poppins = Poppins({
+  subsets: ["latin-ext"],
+  weight: ["200", "300", "400", "500", "700"],
+});
 
 function MyApp({
   Component,
@@ -40,7 +41,9 @@ function MyApp({
     <QueryClientProvider client={queryClient}>
       <SessionProvider session={session}>
         <ApolloProvider client={client}>
-          {getLayout(<Component {...pageProps} />)}
+          <main className={twMerge(poppins.className, "font-extralight")}>
+            {getLayout(<Component {...pageProps} />)}
+          </main>
         </ApolloProvider>
       </SessionProvider>
     </QueryClientProvider>

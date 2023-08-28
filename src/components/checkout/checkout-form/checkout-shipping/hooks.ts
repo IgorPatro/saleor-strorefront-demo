@@ -35,7 +35,9 @@ export const useCheckoutShippingForm = (
   const onSubmit = async (values: CheckoutShippingFormValues) => {
     const infoValues = getInfoFormValues();
 
-    const note = `
+    const note =
+      values.parcelLockerName || infoValues.requireInvoice
+        ? `
       ${
         values.parcelLockerName
           ? `Paczkomat:
@@ -58,7 +60,8 @@ export const useCheckoutShippingForm = (
       `
           : ""
       }
-    `;
+    `
+        : "";
 
     const data = await createOrder({
       checkoutId,
