@@ -7,6 +7,7 @@ import { CHECKOUT_CREATE_MUTATION } from "@/graphql/mutations/checkout/checkout-
 import { CHECKOUT_LINES_ADD_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-add";
 import { CHECKOUT_LINES_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-update";
 import { CHECKOUT_LINES_DELETE_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-delete";
+import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
 import { useLocalStorage } from "@/utils/use-local-storage";
 import { ME_QUERY } from "@/graphql/queries/me";
 
@@ -50,7 +51,9 @@ export const useCart = () => {
         },
       });
 
-      await client.clearStore();
+      await client.refetchQueries({
+        include: [CHECKOUT_QUERY],
+      });
 
       return push(`/cart`);
     }
@@ -66,7 +69,9 @@ export const useCart = () => {
       setLocalStorageCartId(data?.checkoutCreate?.checkout?.id);
     }
 
-    await client.clearStore();
+    await client.refetchQueries({
+      include: [CHECKOUT_QUERY],
+    });
 
     return push(`/cart`);
   };
@@ -87,7 +92,9 @@ export const useCart = () => {
       },
     });
 
-    await client.clearStore();
+    await client.refetchQueries({
+      include: [CHECKOUT_QUERY],
+    });
   };
 
   const handleDeleteProduct = async (lineId: string) => {
@@ -100,7 +107,9 @@ export const useCart = () => {
       },
     });
 
-    await client.clearStore();
+    await client.refetchQueries({
+      include: [CHECKOUT_QUERY],
+    });
   };
 
   const isLoading =

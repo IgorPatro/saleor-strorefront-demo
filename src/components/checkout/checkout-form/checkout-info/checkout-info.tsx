@@ -37,7 +37,7 @@ export const CheckoutInfo = ({ onSubmit }: CheckoutCustomerProps) => {
       className="w-full space-y-4 max-w-2xl"
     >
       <div className="flex flex-col gap-4 justify-end">
-        <h1 className="text-2xl font-semibold">Twoje zamówienie</h1>
+        <h1 className="text-2xl uppercase">Twoje zamówienie</h1>
         <p>{"Koszyk > Informacje > Dostawa > Płatność"}</p>
 
         <div className="flex gap-3">

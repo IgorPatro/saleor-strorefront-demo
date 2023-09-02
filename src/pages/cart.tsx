@@ -1,17 +1,13 @@
 import React from "react";
 import { CHECKOUT_QUERY } from "@/graphql/queries/checkout";
-import { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import { CHECKOUT_LINES_UPDATE_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-update";
-import { CHECKOUT_LINES_DELETE_MUTATION } from "@/graphql/mutations/checkout/checkout-lines-delete";
 import Link from "next/link";
-import { useLocalStorage } from "@/utils/use-local-storage";
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { client } from "@/utils/apollo-client";
-import { CartProductItem } from "@/components/cart/cart-product-item";
 import { type CheckoutLine } from "@/saleor/graphql";
-import { CartSummary } from "@/components/cart/cart-summary/cart-summary";
 import { useCart } from "@/hooks/use-cart";
+import { CartTable } from "@/components/cart/cart-table";
+import { Button } from "@/components/ui/button";
 
 const CartPage = () => {
   const { push } = useRouter();
@@ -44,8 +40,8 @@ const CartPage = () => {
   ) {
     return (
       <div>
-        <h1 className="text-2xl font-bold">Your cart is empty</h1>
-        <p className="text-lg">
+        <h1 className="text-2xl font-semibold">Twój koszyk jest pusty</h1>
+        <p>
           You have no items in your cart. Click <Link href="/">here</Link> to
           continue shopping.
         </p>
@@ -54,17 +50,24 @@ const CartPage = () => {
   }
 
   return (
-    <div className="flex gap-10">
-      <div className="w-full flex flex-col gap-3">
-        {data.checkout?.lines.map((line) => (
-          <CartProductItem key={line.id} line={line as CheckoutLine} />
-        ))}
+    <div className="flex gap-10 w-full">
+      <div className="flex flex-col gap-4 justify-end w-full">
+        <h1 className="text-2xl uppercase">Twój koszyk</h1>
+        <p>Jeśli wybrałeś już swoje produkty - przejdź dalej</p>
+        <CartTable lines={data.checkout?.lines as CheckoutLine[]} />
+        {/* <CartSummary
+            isDisabled={isLoading || isCheckoutQueryLoading}
+            totalPrice={data.checkout?.totalPrice?.gross.amount ?? 0}
+            onGenerateOrder={onGenerateOrder}
+          /> */}
+        <Button
+          className="self-end"
+          variant="secondary"
+          onClick={onGenerateOrder}
+        >
+          Przejdź do zamówienia
+        </Button>
       </div>
-      <CartSummary
-        isDisabled={isLoading || isCheckoutQueryLoading}
-        totalPrice={data.checkout?.totalPrice?.gross.amount ?? 0}
-        onGenerateOrder={onGenerateOrder}
-      />
     </div>
   );
 };

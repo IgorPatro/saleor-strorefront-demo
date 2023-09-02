@@ -12,7 +12,7 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <ThemeProvider attribute="class" defaultTheme="light">
       <Navbar />
-      <div className="mt-20">{children}</div>
+      <div className="mt-20 container p-10">{children}</div>
       <Footer />
     </ThemeProvider>
   );
