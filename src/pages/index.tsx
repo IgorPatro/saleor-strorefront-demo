@@ -1,11 +1,13 @@
 import { serverClient } from "@/utils/apollo-client";
 import { PRODUCTS_QUERY } from "@/graphql/queries/products";
 import { ProductCard } from "@/components/product/product-card";
-import { useAddToCart } from "@/hooks/use-add-to-cart";
+import { useCart } from "@/hooks/use-cart";
 import { type Product } from "@/saleor/graphql";
 import { Hero } from "@/components/hero";
 import { ProductsList } from "@/components/products-list";
 import { RiH1 } from "react-icons/ri";
+import { Navbar } from "@/components/layout/navbar";
+import { Footer } from "@/components/layout/footer";
 
 export const getServerSideProps = async () => {
   const { data } = await serverClient.query({
@@ -28,7 +30,9 @@ interface HomeProps {
 }
 
 export default function Home({ products }: HomeProps) {
-  const { handleAddToCart } = useAddToCart();
+  const { cartId, handleAddToCart } = useCart();
+
+  console.log(cartId);
 
   return (
     <>
@@ -49,3 +53,13 @@ export default function Home({ products }: HomeProps) {
     </>
   );
 }
+
+Home.getLayout = (page: React.ReactNode) => {
+  return (
+    <>
+      <Navbar />
+      {page}
+      <Footer />
+    </>
+  );
+};
