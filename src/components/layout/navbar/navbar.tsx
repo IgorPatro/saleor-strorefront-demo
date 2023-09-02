@@ -44,13 +44,7 @@ export const Navbar = () => {
   const { data: me } = useQuery(ME_QUERY);
 
   const onRedirectToCart = async () => {
-    const currentCartId = me?.me?.checkout?.id ?? localStorageCartId;
-
-    if (currentCartId) {
-      return push(`/cart/${currentCartId}`);
-    }
-
-    return push(`/cart/empty`);
+    return push(`/cart`);
   };
 
   return (
@@ -68,7 +62,7 @@ export const Navbar = () => {
                   "pb-3 flex relative overflow-x-hidden before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-1 before:bg-white hover:before:translate-x-0 before:-translate-x-full before:transition-transform ease-in-out duration-300"
                 }
               >
-                <Link href={item.href} className="text-white uppercase">
+                <Link href={item.href} className="text-[#888] uppercase">
                   {item.name}
                 </Link>
               </li>

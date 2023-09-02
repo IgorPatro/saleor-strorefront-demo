@@ -10,7 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
-import { useAddToCart } from "@/hooks/use-add-to-cart";
+import { useCart } from "@/hooks/use-cart";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const productSlug = ctx.query["productSlug"] as string;
@@ -39,7 +39,7 @@ const ProductPage = ({ productSlug, productData }: ProductPageProps) => {
       ""
   );
 
-  const { handleAddToCart } = useAddToCart();
+  const { handleAddToCart } = useCart();
 
   return (
     <div className="flex gap-10">

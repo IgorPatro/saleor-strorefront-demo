@@ -45,6 +45,12 @@ export const CHECKOUT_QUERY = gql(`
       lines {
         id
         quantity
+        totalPrice {
+          gross {
+            amount
+            currency
+          }
+        }
         variant {
           name
           pricing {
